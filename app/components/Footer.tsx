@@ -3,12 +3,12 @@ import { Ship, Facebook, Instagram, Youtube } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="bg-gray-900 text-white py-16 md:py-24 border-t border-white/10">
-            <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <footer className="bg-gray-900 text-white py-12 md:py-16 border-t border-white/10">
+            <div className="max-w-6xl mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-6">
-                            <Ship className="w-8 h-8 text-blue-500" />
+                            <Ship className="w-8 h-8 text-gray-400" />
                             <span className="font-bold text-xl tracking-tight">Emerald Princess</span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
@@ -46,9 +46,9 @@ export default function Footer() {
                             <input
                                 type="email"
                                 placeholder="이메일 주소"
-                                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                                className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-gray-500"
                             />
-                            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+                            <button className="bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors">
                                 구독
                             </button>
                         </div>

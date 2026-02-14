@@ -23,22 +23,23 @@ const spots = [
 
 export default function TouristSpots() {
     return (
-        <section id="tourist-spots" className="py-20 md:py-32 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 md:px-6">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <span className="text-blue-600 font-semibold tracking-wider text-sm uppercase mb-3 block">
+        <>
+            {/* Section 7 */}
+            <section id="tourist-spots" className="py-12 md:py-20 bg-white">
+                <div className="max-w-6xl mx-auto px-4 md:px-6 text-center">
+                    <span className="text-sm font-medium tracking-widest uppercase text-gray-500 block">
                         Destinations
                     </span>
-                    <h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                    <h2 className="mt-3 md:mt-4 text-3xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
                         알래스카의 대자연을 만나다
                     </h2>
-                    <p className="text-xl text-gray-600 leading-relaxed">
-                        발길 닿는 곳마다 펼쳐지는 경이로운 풍경.<br className="hidden md:block" />
-                        평생 잊지 못할 감동의 순간들을 기록하세요.
+                    <p className="mt-3 md:mt-4 text-xl md:text-2xl font-normal leading-relaxed text-gray-600">
+                        발길 닿는 곳마다 펼쳐지는 경이로운 풍경,
+                        평생 잊지 못할 감동의 순간들을 기록하세요
                     </p>
                 </div>
 
-                <div className="space-y-20 md:space-y-32">
+                <div className="max-w-6xl mx-auto px-4 md:px-6 mt-8 md:mt-12 space-y-20 md:space-y-32">
                     {spots.map((spot, index) => (
                         <div key={index} className={`flex flex-col gap-8 md:gap-16 items-center ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
                             <div className="w-full md:w-1/2">
@@ -52,18 +53,18 @@ export default function TouristSpots() {
                                 </div>
                             </div>
                             <div className="w-full md:w-1/2 text-center md:text-left">
-                                <h3 className="text-2xl md:text-4xl font-bold text-gray-900 mb-6">{spot.name}</h3>
-                                <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-8">
+                                <h3 className="text-xl md:text-2xl font-semibold leading-snug text-gray-900">{spot.name}</h3>
+                                <p className="mt-3 text-base md:text-lg font-normal leading-[1.7] text-gray-700">
                                     {spot.description}
                                 </p>
-                                <button className="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1 hover:text-blue-800 hover:border-blue-800 transition-colors">
-                                    자세히 보기
-                                </button>
+                                <a className="mt-4 inline-flex text-sm font-medium text-gray-700 underline-offset-4 hover:underline">
+                                    자세히 보기 →
+                                </a>
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }

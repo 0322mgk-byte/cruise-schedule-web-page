@@ -1,73 +1,72 @@
 export default function Intro() {
     return (
-        <section id="intro" className="py-20 md:py-32 bg-white">
-            <div className="max-w-3xl mx-auto px-4 md:px-6 text-center">
-                <span className="text-blue-600 font-semibold tracking-wider text-sm uppercase mb-3 block">
-                    Premium Experience
-                </span>
-                <h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-16">
-                    크루즈 시설
-                </h2>
-            </div>
+        <>
+            {/* Section 3 */}
+            <section id="intro" className="py-12 md:py-20 bg-gray-100">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
+                    <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
+                        크루즈 시설 안내
+                    </h2>
+                    <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
+                        크루즈에서 즐길 수 있는 대표 시설을 소개합니다
+                    </p>
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?q=80&w=2670&auto=format&fit=crop"
-                            alt="Interior"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">인테리어</span>
-                    </div>
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2670&auto=format&fit=crop"
-                            alt="Dining"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">다이닝</span>
-                    </div>
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=2664&auto=format&fit=crop"
-                            alt="Pool"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">수영장</span>
-                    </div>
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2698&auto=format&fit=crop"
-                            alt="Lounge"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">라운지</span>
-                    </div>
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2670&auto=format&fit=crop"
-                            alt="Deck"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">데크</span>
-                    </div>
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                        <img
-                            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2673&auto=format&fit=crop"
-                            alt="Ocean View"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">오션 뷰</span>
+                    <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-8">
+                        <div className="relative aspect-[11/10] rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group">
+                            <img
+                                src="/section2/unnamed.jpg"
+                                alt="대극장"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-5 left-6 text-left drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                                <span className="text-white text-lg font-semibold block">대극장</span>
+                                <span className="text-white/80 text-sm font-medium block mt-1">화려한 공연이 펼쳐지는 선상 극장</span>
+                                <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 cursor-pointer"><span className="group-hover:underline underline-offset-4">자세히 보기</span><span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span></span>
+                            </div>
+                        </div>
+                        <div className="relative aspect-[11/10] rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group">
+                            <img
+                                src="/section2/PR-Sun-VB-Piazza03-523x360.webp"
+                                alt="중앙 로비"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-5 left-6 text-left drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                                <span className="text-white text-lg font-semibold block">중앙 로비</span>
+                                <span className="text-white/80 text-sm font-medium block mt-1">우아한 분위기의 크루즈 중심 공간</span>
+                                <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 cursor-pointer"><span className="group-hover:underline underline-offset-4">자세히 보기</span><span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span></span>
+                            </div>
+                        </div>
+                        <div className="relative aspect-[11/10] rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group">
+                            <img
+                                src="/section2/LODGE4_MYD_No Camp Discovery_EDIT1_4x5-Portrait.webp"
+                                alt="패밀리 엔터테인먼트"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-5 left-6 text-left drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                                <span className="text-white text-lg font-semibold block">패밀리 엔터테인먼트</span>
+                                <span className="text-white/80 text-sm font-medium block mt-1">온 가족이 함께 즐기는 놀이 공간</span>
+                                <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 cursor-pointer"><span className="group-hover:underline underline-offset-4">자세히 보기</span><span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span></span>
+                            </div>
+                        </div>
+                        <div className="relative aspect-[11/10] rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group">
+                            <img
+                                src="/section2/onship-spa-massage.avif"
+                                alt="아우라 스파"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-5 left-6 text-left drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                                <span className="text-white text-lg font-semibold block">아우라 스파</span>
+                                <span className="text-white/80 text-sm font-medium block mt-1">바다 위에서 누리는 힐링 테라피</span>
+                                <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 cursor-pointer"><span className="group-hover:underline underline-offset-4">자세히 보기</span><span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }

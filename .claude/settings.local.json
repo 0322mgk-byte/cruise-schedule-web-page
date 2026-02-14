@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(npx next build:*)",
+      "mcp__magic__21st_magic_component_refiner",
+      "mcp__magic__21st_magic_component_inspiration",
+      "WebFetch(domain:youtube.com)",
+      "Bash(copy:*)",
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n1차 MVP: 규정 및 유의사항 완성\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}

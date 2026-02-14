@@ -40,12 +40,12 @@ export default function Header() {
         : "bg-transparent"
         }`}
     >
-      <div className="relative h-full max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
+      <div className="relative h-full max-w-7xl mx-auto px-4 md:px-6 flex items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <Ship className={`w-8 h-8 transition-colors ${scrolled || menuOpen ? "text-blue-600" : "text-white group-hover:text-blue-200"}`} />
-          <span className={`font-bold text-xl tracking-tight transition-colors ${scrolled || menuOpen ? "text-gray-900" : "text-white group-hover:text-blue-200"}`}>
-            Emerald Princess
+          <Ship className={`w-8 h-8 transition-colors ${scrolled || menuOpen ? "text-gray-900" : "text-white group-hover:text-gray-200"}`} />
+          <span className={`font-bold text-xl tracking-tight transition-colors ${scrolled || menuOpen ? "text-gray-900" : "text-white group-hover:text-gray-200"}`}>
+            한세계 여행사
           </span>
         </Link>
 
@@ -64,12 +64,12 @@ export default function Header() {
         </nav>
 
         {/* CTA Button */}
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center ml-auto">
           <Link
             href="#contact"
-            className={`text-sm font-medium h-10 px-6 inline-flex items-center justify-center rounded-full transition-colors duration-200 shadow-lg ${scrolled
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-white text-blue-900 hover:bg-blue-50"
+            className={`text-sm font-medium h-10 px-4 inline-flex items-center justify-center rounded-full transition-colors duration-150 ${scrolled
+              ? "bg-gray-900 text-white hover:bg-gray-800"
+              : "bg-white text-gray-900 hover:bg-gray-100"
               }`}
           >
             예약 문의
@@ -92,12 +92,12 @@ export default function Header() {
       {/* Mobile Menu */}
       {menuOpen && (
         <nav className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium py-3 px-4 rounded-lg transition-colors"
+                className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-medium py-3 px-4 rounded-lg transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.name}
@@ -105,7 +105,7 @@ export default function Header() {
             ))}
             <Link
               href="#contact"
-              className="mt-2 bg-blue-600 text-white text-center font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-2 bg-gray-900 text-white text-center font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               예약 문의

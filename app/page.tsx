@@ -1,11 +1,12 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
+import TripInfo from "./components/TripInfo";
 import Intro from "./components/Intro";
 import Features from "./components/Features";
 import Details from "./components/Details";
 import TripSummary from "./components/TripSummary";
+import ProductInfo from "./components/ProductInfo";
 import Schedule from "./components/Schedule";
-import TouristSpots from "./components/TouristSpots";
 import Footer from "./components/Footer";
 
 export default function Home() {
@@ -13,12 +14,13 @@ export default function Home() {
     <main className="relative">
       <Header />
       <Hero />
+      <TripInfo />
       <Intro />
       <Features />
       <Details />
-      <TripSummary />
       <Schedule />
-      <TouristSpots />
+      <ProductInfo />
+      <TripSummary />
       <Footer />
     </main>
   );

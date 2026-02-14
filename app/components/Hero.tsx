@@ -68,48 +68,51 @@ export default function Hero() {
     }, []);
 
     return (
-        <section id="hero" className="relative min-h-svh flex items-center overflow-hidden bg-gray-900">
-            {/* YouTube Video Background */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-black/50 z-10" />
-                <div className="absolute inset-0 overflow-hidden hero-video-wrapper">
-                    <div id="hero-yt-player" />
+        <>
+            {/* Section 1 */}
+            <section id="hero" className="relative min-h-svh flex items-center overflow-hidden bg-gray-900">
+                {/* YouTube Video Background */}
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-black/50 z-10" />
+                    <div className="absolute inset-0 overflow-hidden hero-video-wrapper">
+                        <div id="hero-yt-player" />
+                    </div>
                 </div>
-            </div>
 
-            <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
-                <p className="text-2xl md:text-3xl font-bold leading-snug text-white mb-8"
-                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)" }}>
-                    2026년 08월 03일 출발
-                </p>
+                <div className="relative z-20 w-full max-w-7xl mx-auto px-4 md:px-6 text-left">
+                    <span className="text-xl md:text-2xl font-normal tracking-widest uppercase text-white"
+                        style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
+                        2026년 08월 03일 출발
+                    </span>
 
-                <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight text-white mb-8"
-                    style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
-                    프린세스 크루즈 에메랄드호
-                </h1>
+                    <h1 className="mt-8 text-4xl md:text-6xl font-bold leading-tight tracking-tight text-white"
+                        style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
+                        프린세스 크루즈 에메랄드호
+                    </h1>
 
-                <p className="max-w-2xl text-xl md:text-2xl font-medium leading-relaxed text-white mb-8"
-                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)" }}>
-                    알래스카 크루즈 8박 10일의 상세 일정을 안내해 드립니다<br />
-                    일자별 주요 일정과 기항지 정보를 지금 바로 확인하세요
-                </p>
+                    <p className="mt-8 text-xl md:text-2xl font-normal leading-relaxed text-white"
+                        style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
+                        알래스카 크루즈 8박 10일의 상세 일정을 안내해 드립니다<br />
+                        일자별 주요 일정과 기항지 정보를 지금 바로 확인하세요
+                    </p>
 
-                <div className="flex justify-start">
-                    <Link
-                        href="#schedule"
-                        className="h-14 px-8 inline-flex items-center justify-center text-base font-semibold bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/30"
-                    >
-                        일정 확인하기
-                    </Link>
+                    <div className="mt-8">
+                        <Link
+                            href="#schedule"
+                            className="inline-flex items-center justify-center h-12 md:h-14 px-8 text-base font-semibold bg-white text-gray-900 rounded-full hover:bg-gray-100 transition-colors"
+                        >
+                            일정 확인하기
+                        </Link>
+                    </div>
                 </div>
-            </div>
 
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                {/* Scroll indicator */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                    <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }
