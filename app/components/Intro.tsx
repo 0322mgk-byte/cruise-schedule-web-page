@@ -3,7 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-const facilities = [
+interface Highlight {
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+}
+
+const facilities: {
+    name: string;
+    images: string[];
+    alt: string;
+    subtitle: string;
+    description: string;
+    highlights: Highlight[];
+}[] = [
     {
         name: "엔터테인먼트",
         images: [
