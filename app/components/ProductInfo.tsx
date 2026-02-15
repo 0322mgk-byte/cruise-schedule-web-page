@@ -2,7 +2,7 @@ export default function ProductInfo() {
     const includedItems = [
         "대한항공 왕복 항공료(이코노미), 공항-터미널 픽드랍",
         "에메랄드 프린세스 크루즈(인사이드, 오션뷰, 발코니)",
-        "벤쿠버 1박 호텔 및 시내 관광 (입장료, 전용 차량, 한국인 기사 가이드 등)",
+        "밴쿠버 1박 호텔 및 시내 관광 (입장료, 전용 차량, 한국인 기사 가이드 등)",
         "각 기항지 선사 투어 포함 (총 3곳: 주노/스캐그웨이/케치칸)",
         "크루즈 인솔자 동행, 1억 원 여행자 보험",
         "미국/캐나다 비자 발급 비용",
@@ -26,7 +26,7 @@ export default function ProductInfo() {
                     </p>
                 </div>
 
-                <div className="mt-6 md:mt-8 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="mt-6 md:mt-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* 포함사항 */}
                     <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
                         <div className="border-b border-gray-300 px-5 py-4">

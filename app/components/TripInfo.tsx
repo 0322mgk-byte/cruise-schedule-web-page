@@ -18,7 +18,7 @@ export default function TripInfo() {
             label: "여행 지역",
             value: (
                 <div className="flex items-center flex-wrap gap-1">
-                    {["벤쿠버", "해상", "주노", "스캐그웨이", "엔디캇암", "캐치칸", "해상", "벤쿠버"].map((city, i, arr) => (
+                    {["밴쿠버", "해상", "주노", "스캐그웨이", "엔디캇암", "캐치칸", "해상", "밴쿠버"].map((city, i, arr) => (
                         <span key={i} className="flex items-center gap-1">
                             <span className="font-normal leading-relaxed text-gray-600">{city}</span>
                             {i < arr.length - 1 && <span className="text-gray-600 font-semibold mx-2">&gt;</span>}
@@ -54,7 +54,7 @@ export default function TripInfo() {
                         </p>
                     </div>
 
-                    <div className="mt-6 md:mt-8 max-w-5xl mx-auto">
+                    <div className="mt-6 md:mt-10 max-w-5xl mx-auto">
                         <div className="border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
                         <table className="w-full text-left text-base">
                             <tbody>

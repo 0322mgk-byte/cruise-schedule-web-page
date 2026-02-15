@@ -5,6 +5,7 @@ import Intro from "./components/Intro";
 import Features from "./components/Features";
 import Details from "./components/Details";
 import TripSummary from "./components/TripSummary";
+import Checklist from "./components/Checklist";
 import ProductInfo from "./components/ProductInfo";
 import Schedule from "./components/Schedule";
 import Footer from "./components/Footer";
@@ -21,6 +22,7 @@ export default function Home() {
       <Schedule />
       <ProductInfo />
       <TripSummary />
+      <Checklist />
       <Footer />
     </main>
   );

@@ -22,7 +22,7 @@ export default function TripSummary() {
                     </div>
 
                     {/* 취소 위약금 규정 약관 */}
-                    <div className="mt-8 max-w-5xl mx-auto">
+                    <div className="mt-10 max-w-5xl mx-auto">
                         <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
                             <div className="flex flex-col md:flex-row">
                                 <div className="bg-white font-semibold text-gray-700 px-6 py-5 md:w-52 text-base md:text-lg whitespace-nowrap text-left flex items-start justify-start gap-2 flex-shrink-0">
