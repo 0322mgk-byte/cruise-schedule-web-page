@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const LocationPin = () => (
@@ -161,6 +161,7 @@ const emeraldPrincessImages = [
 ];
 
 export const Timeline = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [openDays, setOpenDays] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -1797,6 +1798,10 @@ export const Timeline = () => {
                 const allOpen = allDays.every((day) => openDays.has(day));
                 if (allOpen) {
                   setOpenDays(new Set());
+                  const headerHeight = 56;
+                  const offset = 12;
+                  const top = (sectionRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - headerHeight - offset;
+                  window.scrollTo({ top, behavior: "instant" });
                 } else {
                   setOpenDays(new Set(allDays));
                 }
@@ -1807,7 +1812,7 @@ export const Timeline = () => {
               <ChevronDown className={`w-4 h-4 transition-transform ${scheduleDataBase.every((item) => openDays.has(item.day)) ? "rotate-180" : ""}`} />
             </button>
           </div>
-          <div className="space-y-3 md:space-y-6">
+          <div ref={sectionRef} className="space-y-3 md:space-y-6">
             {scheduleData.map((item) => (
               <div key={item.day} className="border border-gray-200 overflow-hidden">
                 {/* Accordion Header */}

@@ -7,7 +7,12 @@ export default function Footer() {
             <div className="max-w-6xl mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     <div className="md:col-span-1">
-                        <Link href="/" className="flex items-center gap-2 mb-6">
+                        {/* 모바일 */}
+                        <Link href="/" className="md:hidden flex items-center gap-2 mb-6">
+                            <span className="font-bold text-xl tracking-tight">한세계 여행사</span>
+                        </Link>
+                        {/* 데스크탑 */}
+                        <Link href="/" className="hidden md:flex items-center gap-2 mb-6">
                             <Ship className="w-8 h-8 text-gray-400" />
                             <span className="font-bold text-xl tracking-tight">Emerald Princess</span>
                         </Link>
@@ -17,7 +22,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <div>
+                    <div className="hidden md:block">
                         <h4 className="font-bold text-lg mb-6">바로가기</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
                             <li><Link href="#intro" className="hover:text-white transition-colors">크루즈 소개</Link></li>
