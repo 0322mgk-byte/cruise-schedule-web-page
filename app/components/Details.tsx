@@ -26,7 +26,7 @@ export default function Details() {
                     iv_load_policy: 3,
                 },
                 events: {
-                    onReady: (event: YT.PlayerStateEvent) => {
+                    onReady: (event: YT.PlayerEvent) => {
                         playerRef.current = event.target as unknown as YT.Player;
                         (event.target as any).setPlaybackRate(1.25);
                         event.target.playVideo();
