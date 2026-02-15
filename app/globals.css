@@ -31,3 +31,22 @@ body {
   width: max(177.78vh, 100vw);
   height: max(56.25vw, 100vh);
 }
+
+#hero-yt-player-mobile {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  35% { transform: scale(1); }
+  45% { transform: scale(1.03); }
+  55% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2.5s ease-in-out infinite;
+}

@@ -1,4 +1,12 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
 export default function ProductInfo() {
+    const [includedOpen, setIncludedOpen] = useState(true);
+    const [excludedOpen, setExcludedOpen] = useState(true);
+
     const includedItems = [
         "대한항공 왕복 항공료(이코노미), 공항-터미널 픽드랍",
         "에메랄드 프린세스 크루즈(인사이드, 오션뷰, 발코니)",
@@ -16,7 +24,7 @@ export default function ProductInfo() {
 
     return (
         <section id="product-info" className="py-12 md:py-20 bg-gray-100">
-            <div className="max-w-7xl mx-auto px-4 md:px-6">
+            <div className="max-w-7xl mx-auto px-0 md:px-6">
                 <div className="text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
                         상품 안내
@@ -26,18 +34,33 @@ export default function ProductInfo() {
                     </p>
                 </div>
 
-                <div className="mt-6 md:mt-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="mt-6 md:mt-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                     {/* 포함사항 */}
-                    <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
-                        <div className="border-b border-gray-300 px-5 py-4">
-                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base md:text-lg">
+                    <div className="bg-white border border-gray-300 border-t border-t-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
+                        {/* 모바일: 아코디언 헤더 */}
+                        <button
+                            onClick={() => setIncludedOpen(!includedOpen)}
+                            className="md:hidden w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                        >
+                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
+                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <circle cx="12" cy="12" r="9" />
+                                </svg>
+                                포함사항
+                            </span>
+                            <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${includedOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {/* 데스크탑: 기존 헤더 */}
+                        <div className="hidden md:block border-b border-gray-300 px-5 py-4">
+                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-lg">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <circle cx="12" cy="12" r="9" />
                                 </svg>
                                 포함사항
                             </span>
                         </div>
-                        <ul className="px-5 py-5 space-y-2">
+                        {/* 모바일: 아코디언 콘텐츠 */}
+                        <ul className={`px-5 py-5 space-y-2 ${includedOpen ? "block" : "hidden"} md:block`}>
                             {includedItems.map((item, i) => (
                                 <li key={i} className="flex items-start gap-2 text-sm md:text-base text-gray-600 leading-relaxed">
                                     <span className="text-gray-400 flex-shrink-0">▣</span>
@@ -48,16 +71,31 @@ export default function ProductInfo() {
                     </div>
 
                     {/* 불포함사항 */}
-                    <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
-                        <div className="border-b border-gray-300 px-5 py-4">
-                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base md:text-lg">
+                    <div className="bg-white border border-gray-300 border-t border-t-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
+                        {/* 모바일: 아코디언 헤더 */}
+                        <button
+                            onClick={() => setExcludedOpen(!excludedOpen)}
+                            className="md:hidden w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                        >
+                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
+                                <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                불포함사항
+                            </span>
+                            <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${excludedOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {/* 데스크탑: 기존 헤더 */}
+                        <div className="hidden md:block border-b border-gray-300 px-5 py-4">
+                            <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-lg">
                                 <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 불포함사항
                             </span>
                         </div>
-                        <ul className="px-5 py-5 space-y-2">
+                        {/* 모바일: 아코디언 콘텐츠 */}
+                        <ul className={`px-5 py-5 space-y-2 ${excludedOpen ? "block" : "hidden"} md:block`}>
                             {excludedItems.map((item, i) => (
                                 <li key={i} className="flex items-start gap-2 text-sm md:text-base text-gray-600 leading-relaxed">
                                     <span className="text-gray-400 flex-shrink-0">▣</span>

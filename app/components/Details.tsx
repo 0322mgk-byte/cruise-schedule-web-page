@@ -7,7 +7,7 @@ export default function Details() {
 
     useEffect(() => {
         const initPlayer = () => {
-            playerRef.current = new window.YT.Player("details-yt-player", {
+            new window.YT.Player("details-yt-player", {
                 width: "100%",
                 height: "100%",
                 videoId: "5wMQNxrwxM0",
@@ -27,6 +27,7 @@ export default function Details() {
                 },
                 events: {
                     onReady: (event: YT.PlayerStateEvent) => {
+                        playerRef.current = event.target as unknown as YT.Player;
                         (event.target as any).setPlaybackRate(1.25);
                         event.target.playVideo();
                     },
@@ -64,13 +65,19 @@ export default function Details() {
         <>
             {/* Section 5 */}
             <section id="details" className="py-12 md:py-20 bg-gray-100">
-                <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                        <div>
-                            <h2 className="text-2xl md:text-4xl font-bold leading-tight tracking-normal text-gray-900">
+                <div className="max-w-7xl mx-auto px-0 md:px-6">
+                    {/* 모바일 타이틀 */}
+                    <h2 className="md:hidden text-2xl font-bold leading-tight tracking-normal text-gray-900 text-center">
+                        크루즈 제원
+                    </h2>
+
+                    <div className="mt-6 md:mt-0 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 items-center">
+                        <div className="order-2 md:order-none">
+                            {/* 데스크탑 타이틀 */}
+                            <h2 className="hidden md:block text-4xl font-bold leading-tight tracking-normal text-gray-900">
                                 크루즈 제원
                             </h2>
-                            <div className="mt-10 divide-y divide-gray-300 shadow-[0_-2px_0_0_#111827,0_2px_0_0_#111827] text-base md:text-lg">
+                            <div className="px-4 md:px-0 md:mt-10 divide-y divide-gray-300 shadow-none md:shadow-[0_-2px_0_0_#111827,0_2px_0_0_#111827] border-b border-gray-300 md:border-b-0 text-base md:text-lg">
                                 <div className="grid grid-cols-2 gap-x-8 py-3">
                                     <div className="flex gap-2"><span className="text-gray-800">톤 수 :</span><span className="text-gray-800">113,561톤</span></div>
                                     <div className="flex gap-2"><span className="text-gray-800">길이 :</span><span className="text-gray-800">289.86m</span></div>
@@ -90,7 +97,7 @@ export default function Details() {
                             </div>
                         </div>
 
-                        <div className="relative">
+                        <div className="order-1 md:order-none relative">
                             <div className="overflow-hidden shadow-2xl border border-gray-200 bg-gray-100 aspect-video relative">
                                 <div id="details-yt-player" className="absolute inset-0 w-full h-full" />
                             </div>

@@ -58,16 +58,44 @@ const facilities = [
 export default function Intro() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [imageIndex, setImageIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(true);
+    const carouselRef = useRef<HTMLDivElement>(null);
 
     const openModal = (index: number) => {
         setSelectedIndex(index);
         setImageIndex(0);
+        setIsTransitioning(true);
+        history.pushState({ modal: "intro" }, "");
     };
-    const closeModal = () => setSelectedIndex(null);
+    const closeModal = () => {
+        if (selectedIndex !== null) {
+            setSelectedIndex(null);
+            history.back();
+        }
+    };
+
+    useEffect(() => {
+        const onPopState = () => {
+            setSelectedIndex(null);
+        };
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
 
     const currentImages = selectedIndex !== null ? facilities[selectedIndex].images : [];
-    const prevImage = () => setImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
-    const nextImage = () => setImageIndex((prev) => (prev + 1) % currentImages.length);
+    const totalImages = currentImages.length;
+    const prevImage = () => setImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+    const nextImage = () => {
+        setIsTransitioning(true);
+        setImageIndex((prev) => prev + 1);
+    };
+
+    const handleTransitionEnd = () => {
+        if (imageIndex >= totalImages) {
+            setIsTransitioning(false);
+            setImageIndex(0);
+        }
+    };
 
     const touchStartX = useRef(0);
     const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
@@ -81,6 +109,12 @@ export default function Intro() {
     useEffect(() => {
         if (selectedIndex !== null) {
             document.body.style.overflow = "hidden";
+            const images = facilities[selectedIndex].images;
+            const timer = setInterval(() => {
+                setIsTransitioning(true);
+                setImageIndex((prev) => prev + 1);
+            }, 3000);
+            return () => clearInterval(timer);
         } else {
             document.body.style.overflow = "";
         }
@@ -91,7 +125,7 @@ export default function Intro() {
         <>
             {/* Section 3 */}
             <section id="intro" className="py-12 md:py-20 bg-gray-100">
-                <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
+                <div className="max-w-7xl mx-auto px-0 md:px-6 text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
                         크루즈 시설 안내
                     </h2>
@@ -99,11 +133,11 @@ export default function Intro() {
                         크루즈에서 즐길 수 있는 대표 시설을 소개합니다
                     </p>
 
-                    <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-8">
+                    <div className="mt-6 md:mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-8">
                         {facilities.map((facility, index) => (
                             <div
                                 key={index}
-                                className="relative aspect-[11/10] rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+                                className="relative aspect-[3/2] md:aspect-[11/10] rounded-none md:rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-[0_15px_25px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
                                 onClick={() => openModal(index)}
                             >
                                 <img
@@ -115,7 +149,7 @@ export default function Intro() {
                                 <div className="absolute bottom-5 left-6 text-left drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                                     <span className="text-white text-lg font-semibold block">{facility.name}</span>
                                     <span className="text-white/80 text-sm font-medium block mt-1">{facility.subtitle}</span>
-                                    <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300">
+                                    <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 animate-heartbeat">
                                         <span className="group-hover:underline underline-offset-4">자세히 보기</span>
                                         <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
                                     </span>
@@ -129,59 +163,64 @@ export default function Intro() {
                 {selectedIndex !== null && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center">
                         <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-                        <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-4xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
                             <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
                                 <h3 className="text-base md:text-lg font-bold">[시설 안내] {facilities[selectedIndex].name}</h3>
                                 <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
                                     <X className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>
                             </div>
-                            <div className="p-4 md:p-6">
+                            <div className="md:px-6 md:pt-6">
+                            <div
+                                className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-gray-200 overflow-hidden group/carousel"
+                                onTouchStart={handleTouchStart}
+                                onTouchEnd={handleTouchEnd}
+                            >
                                 <div
-                                    className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden group/carousel"
-                                    onTouchStart={handleTouchStart}
-                                    onTouchEnd={handleTouchEnd}
+                                    ref={carouselRef}
+                                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                                    style={{ transform: `translateX(-${imageIndex * 100}%)` }}
+                                    onTransitionEnd={handleTransitionEnd}
                                 >
-                                    <div
-                                        className="flex h-full transition-transform duration-300 ease-in-out"
-                                        style={{ transform: `translateX(-${imageIndex * 100}%)` }}
-                                    >
-                                        {currentImages.map((src, i) => (
-                                            <img
-                                                key={i}
-                                                src={src}
-                                                alt={`${facilities[selectedIndex].name} ${i + 1}`}
-                                                className="w-full h-full object-cover flex-shrink-0"
-                                            />
-                                        ))}
-                                    </div>
-                                    {currentImages.length > 1 && (
-                                        <>
-                                            <button
-                                                onClick={prevImage}
-                                                className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
-                                            >
-                                                <ChevronLeft className="w-5 h-5" />
-                                            </button>
-                                            <button
-                                                onClick={nextImage}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
-                                            >
-                                                <ChevronRight className="w-5 h-5" />
-                                            </button>
-                                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                                                {currentImages.map((_, i) => (
-                                                    <button
-                                                        key={i}
-                                                        onClick={() => setImageIndex(i)}
-                                                        className={`w-2 h-2 rounded-full transition-colors ${i === imageIndex ? "bg-white" : "bg-white/50"}`}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </>
+                                    {currentImages.map((src, i) => (
+                                        <img
+                                            key={i}
+                                            src={src}
+                                            alt={`${facilities[selectedIndex].name} ${i + 1}`}
+                                            className="w-full h-full object-cover flex-shrink-0"
+                                        />
+                                    ))}
+                                    {currentImages.length > 0 && (
+                                        <img
+                                            src={currentImages[0]}
+                                            alt={`${facilities[selectedIndex].name} 1`}
+                                            className="w-full h-full object-cover flex-shrink-0"
+                                        />
                                     )}
                                 </div>
-                                <div className="mt-6 text-sm md:text-base text-gray-700 leading-relaxed space-y-3 text-left">
+                                {currentImages.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={prevImage}
+                                            className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
+                                        >
+                                            <ChevronLeft className="w-5 h-5" />
+                                        </button>
+                                        <button
+                                            onClick={nextImage}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
+                                        >
+                                            <ChevronRight className="w-5 h-5" />
+                                        </button>
+                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                                            {(imageIndex % totalImages) + 1}/{totalImages}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            </div>
+                            <div className="p-4 md:px-6 md:pb-6">
+                                <div className="mt-4 md:mt-6 text-sm md:text-base text-gray-700 leading-relaxed space-y-3 text-left">
                                     <h4 className="text-base md:text-lg font-bold text-gray-900">{facilities[selectedIndex].subtitle}</h4>
                                     <p>{facilities[selectedIndex].description}</p>
                                     {facilities[selectedIndex].highlights.length > 0 && (

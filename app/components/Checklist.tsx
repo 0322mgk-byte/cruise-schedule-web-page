@@ -143,8 +143,40 @@ function AccordionItem({ section, index, openSet, toggle, isLast }: {
     );
 }
 
+function MobileAccordionItem({ section, index, openSet, toggle }: {
+    section: typeof checklistData[number];
+    index: number;
+    openSet: Set<number>;
+    toggle: (index: number) => void;
+}) {
+    const isOpen = openSet.has(index);
+    return (
+        <div className="bg-white border border-gray-300 overflow-hidden">
+            <button
+                onClick={() => toggle(index)}
+                className="w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+            >
+                <span className="font-bold text-gray-900 text-base">
+                    {section.title}
+                </span>
+                <ChevronDown
+                    className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                />
+            </button>
+            <ul className={`px-5 py-5 space-y-2.5 ${isOpen ? "block" : "hidden"}`}>
+                {section.items.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
+                        <span className="text-gray-400 flex-shrink-0">▣</span>
+                        <span>{item}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
 export default function Checklist() {
-    const [openSet, setOpenSet] = useState<Set<number>>(new Set([0]));
+    const [openSet, setOpenSet] = useState<Set<number>>(new Set());
 
     const toggle = (index: number) => {
         setOpenSet((prev) => {
@@ -164,7 +196,7 @@ export default function Checklist() {
 
     return (
         <section id="checklist" className="py-12 md:py-20 bg-gray-100">
-            <div className="max-w-6xl mx-auto px-4 md:px-6">
+            <div className="max-w-6xl mx-auto px-0 md:px-6">
                 <div className="text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
                         준비물
@@ -174,10 +206,10 @@ export default function Checklist() {
                     </p>
                 </div>
 
-                {/* 모바일: 원래 순서대로 1열 */}
-                <div className="mt-10 max-w-5xl mx-auto md:hidden bg-white border border-gray-200 border-t-0 shadow-[0_-2px_0_0_black]">
+                {/* 모바일: 개별 카드 아코디언 */}
+                <div className="mt-6 md:hidden max-w-5xl mx-auto grid grid-cols-1 gap-3">
                     {checklistData.map((section, index) => (
-                        <AccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} isLast={index === checklistData.length - 1} />
+                        <MobileAccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} />
                     ))}
                 </div>
 

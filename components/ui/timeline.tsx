@@ -162,6 +162,12 @@ const emeraldPrincessImages = [
 
 export const Timeline = () => {
   const [openDays, setOpenDays] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setOpenDays(new Set(scheduleDataBase.map((item) => item.day)));
+    }
+  }, []);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -180,9 +186,23 @@ export const Timeline = () => {
   const openModal = (type: string) => {
     setActiveModal(type);
     setCarouselIndex(0);
+    history.pushState({ modal: "timeline" }, "");
   };
 
-  const closeModal = () => setActiveModal(null);
+  const closeModal = () => {
+    if (activeModal !== null) {
+      setActiveModal(null);
+      history.back();
+    }
+  };
+
+  useEffect(() => {
+    const onPopState = () => {
+      setActiveModal(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const imageMap: Record<string, string[]> = {
     vancouver: vancouverImages,
@@ -289,12 +309,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("vancouver")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src="/sectrion6/connie_sf-vancouver-2238137_640.webp" alt="밴쿠버" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[관광정보]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">밴쿠버</p>
             </div>
@@ -333,13 +353,13 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("gastown")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={gastownImages[0]} alt="개스타운" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
-              <span className="text-xs text-gray-500">밴쿠버에서 가장 오래된 거리</span>
+            <div className="flex-1">
+              <span className="text-xs text-gray-500">[관광정보]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">개스타운</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
@@ -375,13 +395,13 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("canadaplace")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={canadaPlaceImages[0]} alt="캐나다 플레이스" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
-              <span className="text-xs text-gray-500">밴쿠버 항구의 랜드마크</span>
+            <div className="flex-1">
+              <span className="text-xs text-gray-500">[관광정보]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">캐나다 플레이스</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
@@ -418,13 +438,13 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("stanleypark")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={stanleyParkImages[0]} alt="스탠리 공원" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
-              <span className="text-xs text-gray-500">도심 속 거대한 숲</span>
+            <div className="flex-1">
+              <span className="text-xs text-gray-500">[관광정보]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">스탠리 공원</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
@@ -461,13 +481,13 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("chinatown")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={chinatownImages[0]} alt="차이나타운" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
-              <span className="text-xs text-gray-500">북미에서 가장 오래된</span>
+            <div className="flex-1">
+              <span className="text-xs text-gray-500">[관광정보]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">차이나타운</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
@@ -554,12 +574,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("boarding")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-amber-50 flex items-center justify-center flex-shrink-0 border-r border-gray-200">
-              <span className="text-3xl">📢</span>
+            <div className="w-16 aspect-[4/3] bg-amber-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📢</span>
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[승선 안내]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">승선 수속 안내</p>
             </div>
@@ -620,12 +640,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("emeraldprincess")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={emeraldPrincessImages[0]} alt="에메랄드 프린세스" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">프린세스 크루즈</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">에메랄드 프린세스</p>
             </div>
@@ -720,12 +740,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("cruiseinterior")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={cruiseInteriorImages[0]} alt="크루즈 내부" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">🚢 전일 해상</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">에메랄드 크루즈</p>
             </div>
@@ -832,14 +852,14 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("juneau")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={juneauImages[0]} alt="주노" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[관광정보]</span>
-              <p className="text-base font-bold text-gray-900 mt-0.5">주노 (Juneau)</p>
+              <p className="text-base font-bold text-gray-900 mt-0.5">주노</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
           </button>
@@ -913,12 +933,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("shoreexcursion")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-blue-50 flex items-center justify-center flex-shrink-0 border-r border-gray-200">
-              <span className="text-3xl">⚓</span>
+            <div className="w-16 aspect-[4/3] bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">⚓</span>
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[기항지 투어]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">추천 선택 관광</p>
             </div>
@@ -1020,14 +1040,14 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("skagway")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={skagwayImages[0]} alt="스캐그웨이" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[관광정보]</span>
-              <p className="text-base font-bold text-gray-900 mt-0.5">스캐그웨이 (Skagway)</p>
+              <p className="text-base font-bold text-gray-900 mt-0.5">스캐그웨이</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
           </button>
@@ -1091,12 +1111,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("shoreexcursion_skagway")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-blue-50 flex items-center justify-center flex-shrink-0 border-r border-gray-200">
-              <span className="text-3xl">⚓</span>
+            <div className="w-16 aspect-[4/3] bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">⚓</span>
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[기항지 투어]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">추천 선택 관광</p>
             </div>
@@ -1200,14 +1220,14 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("endicottarm")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={endicottArmImages[0]} alt="엔디캇 암" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[관광정보]</span>
-              <p className="text-base font-bold text-gray-900 mt-0.5">엔디캇 암 (Endicott Arm)</p>
+              <p className="text-base font-bold text-gray-900 mt-0.5">엔디캇 암</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
           </button>
@@ -1252,12 +1272,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("cruiseatsea")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={cruiseInteriorImages[0]} alt="크루즈 시설" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">🚢 전일 해상</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">에메랄드 크루즈</p>
             </div>
@@ -1363,14 +1383,14 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("ketchikan")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={ketchikanImages[0]} alt="케치칸" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[관광정보]</span>
-              <p className="text-base font-bold text-gray-900 mt-0.5">케치칸 (Ketchikan)</p>
+              <p className="text-base font-bold text-gray-900 mt-0.5">케치칸</p>
             </div>
             <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
           </button>
@@ -1442,12 +1462,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("shoreexcursion_ketchikan")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-blue-50 flex items-center justify-center flex-shrink-0 border-r border-gray-200">
-              <span className="text-3xl">⚓</span>
+            <div className="w-16 aspect-[4/3] bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">⚓</span>
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[기항지 투어]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">추천 선택 관광</p>
             </div>
@@ -1561,12 +1581,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("cruiseatsea")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="w-16 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
               <img src={cruiseInteriorImages[0]} alt="크루즈 시설" className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">🚢 전일 해상</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">에메랄드 크루즈</p>
             </div>
@@ -1668,12 +1688,12 @@ export const Timeline = () => {
           <span className="absolute -left-10 top-[26px] w-[10px] h-[10px] rounded-full bg-gray-300" />
           <button
             onClick={() => openModal("disembarkation")}
-            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 text-left"
+            className="mt-4 w-full border border-gray-300 bg-white shadow-sm overflow-hidden flex items-center gap-4 pl-2 py-2 text-left"
           >
-            <div className="w-28 h-20 bg-amber-50 flex items-center justify-center flex-shrink-0 border-r border-gray-200">
-              <span className="text-3xl">📢</span>
+            <div className="w-16 aspect-[4/3] bg-amber-50 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📢</span>
             </div>
-            <div className="flex-1 py-3">
+            <div className="flex-1">
               <span className="text-xs text-gray-500">[하선 안내]</span>
               <p className="text-base font-bold text-gray-900 mt-0.5">하선 수속 안내</p>
             </div>
@@ -1759,7 +1779,7 @@ export const Timeline = () => {
 
   return (
     <div className="w-full bg-white">
-      <div className="max-w-7xl mx-auto py-12 md:py-20 px-4 md:px-6 text-center">
+      <div className="max-w-7xl mx-auto py-12 md:py-20 px-0 md:px-6 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
           상세 일정
         </h2>
@@ -1768,8 +1788,26 @@ export const Timeline = () => {
         </p>
 
         {/* Accordion Section */}
-        <div className="mt-10 max-w-5xl mx-auto">
-          <div className="space-y-6">
+        <div className="mt-6 md:mt-10 max-w-5xl mx-auto">
+          {/* 모바일 모두펼침/모두접기 버튼 */}
+          <div className="md:hidden sticky top-[68px] z-10 flex justify-end px-4 mb-3">
+            <button
+              onClick={() => {
+                const allDays = scheduleDataBase.map((item) => item.day);
+                const allOpen = allDays.every((day) => openDays.has(day));
+                if (allOpen) {
+                  setOpenDays(new Set());
+                } else {
+                  setOpenDays(new Set(allDays));
+                }
+              }}
+              className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 rounded flex items-center gap-1"
+            >
+              {scheduleDataBase.every((item) => openDays.has(item.day)) ? "모두접기" : "모두펼침"}
+              <ChevronDown className={`w-4 h-4 transition-transform ${scheduleDataBase.every((item) => openDays.has(item.day)) ? "rotate-180" : ""}`} />
+            </button>
+          </div>
+          <div className="space-y-3 md:space-y-6">
             {scheduleData.map((item) => (
               <div key={item.day} className="border border-gray-200 overflow-hidden">
                 {/* Accordion Header */}
@@ -1778,14 +1816,19 @@ export const Timeline = () => {
                   className="w-full flex items-center hover:bg-gray-50 transition-colors"
                 >
                   {/* Left Side - Day & Date */}
-                  <div className="bg-gray-600 text-white px-6 py-4 flex flex-col items-start min-w-[160px]">
-                    <span className="text-lg font-medium">{item.day}일차</span>
-                    <span className="text-base mt-1 opacity-90">{item.date}</span>
+                  <div className="bg-gray-600 text-white px-4 md:px-6 py-3 md:py-4 flex flex-col items-center md:items-start min-w-[80px] md:min-w-[160px] justify-center">
+                    <span className="text-base md:text-lg font-medium">{item.day}일차</span>
+                    <span className="hidden md:block text-base mt-1 opacity-90">{item.date}</span>
                   </div>
 
                   {/* Right Side - Location & Description */}
-                  <div className="flex-1 bg-gray-100 px-6 py-4 flex items-center justify-between">
-                    <div className="text-left">
+                  <div className="flex-1 bg-gray-100 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+                    {/* 모바일: 날짜 + 지역 한줄 */}
+                    <span className="md:hidden text-base font-medium text-gray-700">
+                      {item.date} {item.location}
+                    </span>
+                    {/* 데스크탑: 지역 + 부연설명 */}
+                    <div className="hidden md:block text-left">
                       <h3 className="text-lg font-medium text-gray-900 mb-1">
                         {item.location}
                       </h3>

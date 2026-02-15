@@ -35,16 +35,28 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 w-full h-14 md:h-16 z-50 transition-all duration-300 ${scrolled || menuOpen
-        ? "bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm"
-        : "bg-transparent"
+      className={`fixed top-0 w-full h-14 md:h-16 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled || menuOpen
+        ? "md:bg-white/80 md:backdrop-blur-md md:border-b md:border-white/20 md:shadow-sm"
+        : "md:bg-transparent"
         }`}
     >
       <div className="relative h-full max-w-7xl mx-auto px-4 md:px-6 flex items-center">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <Ship className={`w-8 h-8 transition-colors ${scrolled || menuOpen ? "text-gray-900" : "text-white group-hover:text-gray-200"}`} />
-          <span className={`font-bold text-xl tracking-tight transition-colors ${scrolled || menuOpen ? "text-gray-900" : "text-white group-hover:text-gray-200"}`}>
+        {/* Mobile Menu Button - 모바일 좌측 */}
+        <button
+          className="md:hidden p-2"
+          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen
+            ? <X className="w-9 h-9 text-white" strokeWidth={1} />
+            : <Menu className="w-9 h-9 text-white" strokeWidth={1} />
+          }
+        </button>
+
+        {/* Logo - 모바일에서 우측, 데스크톱에서 좌측 */}
+        <Link href="/" className="flex items-center gap-2 group ml-auto md:ml-0 pr-2 md:pr-0">
+          <Ship className={`hidden md:block w-6 h-6 transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`} />
+          <span className={`font-bold text-base md:text-xl tracking-tight transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`}>
             한세계 여행사
           </span>
         </Link>
@@ -75,29 +87,17 @@ export default function Header() {
             예약 문의
           </Link>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2"
-          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          {menuOpen
-            ? <X className="w-6 h-6 text-gray-900" />
-            : <Menu className={`w-6 h-6 ${scrolled ? "text-gray-900" : "text-white"}`} />
-          }
-        </button>
       </div>
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <nav className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col gap-1">
-            {navItems.map((item) => (
+        <nav className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+          <div className="max-w-6xl mx-auto px-4 py-2 flex flex-col">
+            {navItems.map((item, index) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-medium py-3 px-4 rounded-lg transition-colors"
+                className={`text-gray-900 hover:text-[#0054a0] font-medium py-3 px-4 transition-colors ${index < navItems.length - 1 ? "border-b border-gray-200" : ""}`}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.name}
@@ -105,7 +105,7 @@ export default function Header() {
             ))}
             <Link
               href="#contact"
-              className="mt-2 bg-gray-900 text-white text-center font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
+              className="mt-3 mb-2 bg-[#0054a0] text-white text-center font-semibold py-3 px-4 rounded-lg hover:bg-[#004080] transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               예약 문의
