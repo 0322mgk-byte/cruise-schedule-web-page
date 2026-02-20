@@ -1,94 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-
-declare global {
-    interface Window {
-        YT: typeof YT;
-        onYouTubeIframeAPIReady: () => void;
-    }
-}
-
-const VIDEO_ID = "5wMQNxrwxM0";
-const CLIP_START = 112;
-const CLIP_END = 127;
 
 export default function Hero() {
-    const desktopPlayerRef = useRef<YT.Player | null>(null);
-    const mobilePlayerRef = useRef<YT.Player | null>(null);
-    const [mobileVideoReady, setMobileVideoReady] = useState(false);
-
-    useEffect(() => {
-        const initPlayers = () => {
-            new window.YT.Player("hero-yt-player", {
-                videoId: VIDEO_ID,
-                playerVars: {
-                    autoplay: 1, mute: 1, controls: 0, showinfo: 0, rel: 0,
-                    modestbranding: 1, playsinline: 1, start: CLIP_START, end: CLIP_END,
-                    disablekb: 1, fs: 0, iv_load_policy: 3,
-                },
-                events: {
-                    onReady: (event: YT.PlayerEvent) => {
-                        desktopPlayerRef.current = event.target as unknown as YT.Player;
-                    },
-                    onStateChange: (event: YT.OnStateChangeEvent) => {
-                        if (event.data === YT.PlayerState.ENDED) {
-                            desktopPlayerRef.current?.seekTo(CLIP_START, true);
-                            desktopPlayerRef.current?.playVideo();
-                        }
-                    },
-                },
-            });
-
-            new window.YT.Player("hero-yt-player-mobile", {
-                videoId: VIDEO_ID,
-                playerVars: {
-                    autoplay: 1, mute: 1, controls: 0, showinfo: 0, rel: 0,
-                    modestbranding: 1, playsinline: 1, start: CLIP_START, end: CLIP_END,
-                    disablekb: 1, fs: 0, iv_load_policy: 3,
-                },
-                events: {
-                    onReady: (event: YT.PlayerEvent) => {
-                        mobilePlayerRef.current = event.target as unknown as YT.Player;
-                        (event.target as any).setPlaybackQuality("large");
-                    },
-                    onStateChange: (event: YT.OnStateChangeEvent) => {
-                        if (event.data === YT.PlayerState.PLAYING) {
-                            setMobileVideoReady(true);
-                        }
-                        if (event.data === YT.PlayerState.ENDED) {
-                            mobilePlayerRef.current?.seekTo(CLIP_START, true);
-                            mobilePlayerRef.current?.playVideo();
-                        }
-                    },
-                },
-            });
-        };
-
-        if (window.YT && window.YT.Player) {
-            initPlayers();
-        } else {
-            const prev = window.onYouTubeIframeAPIReady;
-            window.onYouTubeIframeAPIReady = () => {
-                prev?.();
-                initPlayers();
-            };
-            if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-                const tag = document.createElement("script");
-                tag.src = "https://www.youtube.com/iframe_api";
-                document.head.appendChild(tag);
-            }
-        }
-
-        return () => {
-            desktopPlayerRef.current?.destroy();
-            desktopPlayerRef.current = null;
-            mobilePlayerRef.current?.destroy();
-            mobilePlayerRef.current = null;
-        };
-    }, []);
-
     return (
         <div id="hero">
             {/* Mobile Hero */}
@@ -102,40 +16,45 @@ export default function Hero() {
                     </p>
                 </div>
 
-                {/* 16:9 Video Card */}
+                {/* 16:10 Video Card */}
                 <div className="mt-6 pb-12">
-                    <div className="relative w-full aspect-video overflow-hidden shadow-lg bg-gray-200">
-                        {!mobileVideoReady && (
-                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-gray-200">
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-gray-500 animate-bounce [animation-delay:-0.3s]" />
-                                    <div className="w-2.5 h-2.5 rounded-full bg-gray-500 animate-bounce [animation-delay:-0.15s]" />
-                                    <div className="w-2.5 h-2.5 rounded-full bg-gray-500 animate-bounce" />
-                                </div>
-                                <span className="text-base text-gray-500 tracking-wider">영상 로딩 중</span>
-                            </div>
-                        )}
-                        <div id="hero-yt-player-mobile" className="absolute inset-0 w-full h-full" />
+                    <div className="relative w-full aspect-[16/10] overflow-hidden shadow-lg bg-gray-200">
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                        >
+                            <source src="/hero-video/hero-clip.mp4" type="video/mp4" />
+                        </video>
                     </div>
                 </div>
             </section>
 
             {/* Desktop Hero */}
-            <section className="hidden md:flex relative min-h-svh items-center overflow-hidden bg-gray-900">
-                {/* YouTube Video Background */}
+            <section className="hidden md:flex relative min-h-svh items-center overflow-hidden bg-gray-900 pt-20">
+                {/* Video Background */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
-                    <div className="absolute inset-0 bg-black/50 z-10" />
-                    <div className="absolute inset-0 overflow-hidden hero-video-wrapper">
-                        <div id="hero-yt-player" />
-                    </div>
+                    <div className="absolute inset-0 bg-black/60 z-10" />
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                    >
+                        <source src="/hero-video/hero-clip-1080p.webm" type="video/webm" />
+                        <source src="/hero-video/hero-clip-1080p.mp4" type="video/mp4" />
+                    </video>
                 </div>
 
-                <div className="relative z-20 w-full max-w-7xl mx-auto px-6 text-left">
+                <div className="relative z-20 w-full max-w-7xl mx-auto px-4 md:px-10 text-left">
                     <span className="text-2xl font-normal tracking-widest uppercase text-white"
                         style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
                         2026년 08월 03일 출발
                     </span>
-                    <h1 className="mt-8 text-6xl font-bold leading-tight tracking-tight text-white"
+                    <h1 className="mt-8 text-5xl font-bold leading-tight tracking-tight text-white"
                         style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
                         프린세스 크루즈 에메랄드호
                     </h1>
@@ -147,7 +66,7 @@ export default function Hero() {
                     <div className="mt-8">
                         <Link
                             href="#schedule"
-                            className="inline-flex items-center justify-center h-14 px-8 text-base font-semibold bg-white text-gray-900 rounded-full hover:bg-gray-100 transition-colors"
+                            className="inline-flex items-center justify-center h-14 px-8 text-base font-semibold rounded-full cursor-pointer whitespace-nowrap text-gray-900 hover:text-white transition-[background-position,color] duration-300 ease-out bg-[linear-gradient(to_top,#0054a0_50%,white_50%)] [background-size:100%_200%] [background-position:0%_0%] hover:[background-position:0%_100%]"
                         >
                             일정 확인하기
                         </Link>

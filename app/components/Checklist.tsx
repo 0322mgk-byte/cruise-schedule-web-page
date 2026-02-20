@@ -151,7 +151,7 @@ function MobileAccordionItem({ section, index, openSet, toggle }: {
 }) {
     const isOpen = openSet.has(index);
     return (
-        <div className="bg-white border border-gray-300 overflow-hidden">
+        <div className="bg-white border-y border-gray-300 overflow-hidden">
             <button
                 onClick={() => toggle(index)}
                 className="w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"

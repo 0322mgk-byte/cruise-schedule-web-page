@@ -98,7 +98,7 @@ export default function Details() {
                         </div>
 
                         <div className="order-1 md:order-none relative">
-                            <div className="overflow-hidden shadow-2xl border border-gray-200 bg-gray-100 aspect-video relative">
+                            <div className="overflow-hidden shadow-2xl md:border md:border-gray-200 bg-gray-100 aspect-video relative">
                                 <div id="details-yt-player" className="absolute inset-0 w-full h-full" />
                             </div>
                         </div>

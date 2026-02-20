@@ -36,7 +36,7 @@ export default function ProductInfo() {
 
                 <div className="mt-6 md:mt-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                     {/* 포함사항 */}
-                    <div className="bg-white border border-gray-300 border-t border-t-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
+                    <div className="bg-white border-y border-gray-300 md:border md:border-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
                         {/* 모바일: 아코디언 헤더 */}
                         <button
                             onClick={() => setIncludedOpen(!includedOpen)}
@@ -71,7 +71,7 @@ export default function ProductInfo() {
                     </div>
 
                     {/* 불포함사항 */}
-                    <div className="bg-white border border-gray-300 border-t border-t-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
+                    <div className="bg-white border-y border-gray-300 md:border md:border-gray-300 md:border-t-0 md:shadow-[0_-2px_0_0_black] overflow-hidden">
                         {/* 모바일: 아코디언 헤더 */}
                         <button
                             onClick={() => setExcludedOpen(!excludedOpen)}

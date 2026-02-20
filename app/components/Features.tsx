@@ -113,7 +113,7 @@ export default function Features() {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="bg-white rounded-none md:rounded-lg shadow-lg md:shadow-md border border-gray-200 border-b-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden cursor-pointer"
+                                className="bg-white rounded-none md:rounded-lg shadow-lg md:shadow-md border-y border-gray-200 md:border md:border-gray-200 md:border-b-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden cursor-pointer"
                                 onClick={() => openModal(index)}
                             >
                                 <div className="aspect-[16/9] overflow-hidden">

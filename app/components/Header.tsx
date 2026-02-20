@@ -35,12 +35,12 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 w-full h-14 md:h-16 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled || menuOpen
-        ? "md:bg-white/80 md:backdrop-blur-md md:border-b md:border-white/20 md:shadow-sm"
-        : "md:bg-transparent"
+      className={`fixed top-0 w-full h-14 md:h-20 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled || menuOpen
+        ? "md:bg-white/80 md:backdrop-blur-md md:border-b md:border-gray-200 md:shadow-sm"
+        : "md:bg-transparent md:border-b md:border-white/30"
         }`}
     >
-      <div className="relative h-full max-w-7xl mx-auto px-4 md:px-6 flex items-center">
+      <div className="relative h-full max-w-7xl mx-auto px-4 md:px-10 flex items-center">
         {/* Mobile Menu Button - 모바일 좌측 */}
         <button
           className="md:hidden p-2"
@@ -54,20 +54,22 @@ export default function Header() {
         </button>
 
         {/* Logo - 모바일에서 우측, 데스크톱에서 좌측 */}
-        <Link href="/" className="flex items-center gap-2 group ml-auto md:ml-0 pr-2 md:pr-0">
-          <Ship className={`hidden md:block w-6 h-6 transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`} />
-          <span className={`font-bold text-base md:text-xl tracking-tight transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`}>
-            한세계 여행사
-          </span>
-        </Link>
+        <div className="flex-1 flex items-center">
+          <Link href="/" className="flex items-center gap-2 group ml-auto md:ml-0 pr-2 md:pr-0">
+            <Ship className={`hidden md:block w-6 h-6 transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`} />
+            <span className={`font-bold text-base md:text-2xl tracking-tight transition-colors text-white ${scrolled || menuOpen ? "md:text-gray-900" : "md:group-hover:text-gray-200"}`}>
+              한세계 여행사
+            </span>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-10">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-medium transition-colors duration-150 ${scrolled ? "text-gray-600 hover:text-gray-900" : "text-gray-200 hover:text-white"
+              className={`text-base font-medium transition-colors duration-150 ${scrolled ? "text-gray-600 hover:text-gray-900" : "text-gray-200 hover:text-white"
                 }`}
             >
               {item.name}
@@ -76,11 +78,11 @@ export default function Header() {
         </nav>
 
         {/* CTA Button */}
-        <div className="hidden md:flex items-center ml-auto">
+        <div className="hidden md:flex flex-1 justify-end items-center">
           <Link
             href="#contact"
-            className={`text-sm font-medium h-10 px-4 inline-flex items-center justify-center rounded-full transition-colors duration-150 ${scrolled
-              ? "bg-gray-900 text-white hover:bg-gray-800"
+            className={`text-base font-medium h-10 px-4 inline-flex items-center justify-center rounded-full transition-colors duration-150 ${scrolled
+              ? "bg-[#0054a0] text-white hover:bg-[#004080]"
               : "bg-white text-gray-900 hover:bg-gray-100"
               }`}
           >
