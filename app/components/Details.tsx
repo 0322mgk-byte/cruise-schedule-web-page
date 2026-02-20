@@ -77,7 +77,7 @@ export default function Details() {
                             <h2 className="hidden md:block text-4xl font-bold leading-tight tracking-normal text-gray-900">
                                 크루즈 제원
                             </h2>
-                            <div className="px-4 md:px-0 md:mt-10 divide-y divide-gray-300 shadow-none md:shadow-[0_-2px_0_0_#111827,0_2px_0_0_#111827] border-b border-gray-300 md:border-b-0 text-base md:text-lg">
+                            <div className="px-4 md:px-0 md:mt-10 divide-y divide-gray-300 shadow-none md:shadow-[0_-1px_0_0_#111827,0_1px_0_0_#111827] md:border-b-0 text-base md:text-lg">
                                 <div className="grid grid-cols-2 gap-x-8 py-3">
                                     <div className="flex gap-2"><span className="text-gray-800">톤 수 :</span><span className="text-gray-800">113,561톤</span></div>
                                     <div className="flex gap-2"><span className="text-gray-800">길이 :</span><span className="text-gray-800">289.86m</span></div>
@@ -90,7 +90,7 @@ export default function Details() {
                                     <div className="flex gap-2"><span className="text-gray-800">승객 정원 :</span><span className="text-gray-800">3,080명</span></div>
                                     <div className="flex gap-2"><span className="text-gray-800">규모 :</span><span className="text-gray-800">19층</span></div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-x-8 py-3">
+                                <div className="grid grid-cols-2 gap-x-8 py-3 border-b border-gray-300 md:border-b-0">
                                     <div className="flex gap-2"><span className="text-gray-800">첫 항해 :</span><span className="text-gray-800">2007. 4. 11</span></div>
                                     <div className="flex gap-2"><span className="text-gray-800">객실 수 :</span><span className="text-gray-800">1,539개</span></div>
                                 </div>
@@ -98,7 +98,7 @@ export default function Details() {
                         </div>
 
                         <div className="order-1 md:order-none relative">
-                            <div className="overflow-hidden shadow-2xl md:border md:border-gray-200 bg-gray-100 aspect-video relative">
+                            <div className="overflow-hidden shadow-md md:shadow-2xl md:border md:border-gray-200 bg-gray-100 aspect-video relative">
                                 <div id="details-yt-player" className="absolute inset-0 w-full h-full" />
                             </div>
                         </div>

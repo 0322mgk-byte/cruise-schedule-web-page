@@ -1862,7 +1862,7 @@ export const Timeline = () => {
                   setOpenDays(new Set(allDays));
                 }
               }}
-              className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 rounded flex items-center gap-1"
+              className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 flex items-center gap-1"
             >
               {scheduleDataBase.every((item) => openDays.has(item.day)) ? "모두접기" : "모두펼침"}
               <ChevronDown className={`w-4 h-4 transition-transform ${scheduleDataBase.every((item) => openDays.has(item.day)) ? "rotate-180" : ""}`} />

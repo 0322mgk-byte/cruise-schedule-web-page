@@ -65,7 +65,7 @@ export default function TripInfo() {
                     </div>
 
                     <div className="mt-6 md:mt-10 max-w-5xl mx-auto">
-                        <div className="border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
+                        <div className="border border-gray-300 border-t-0 shadow-[0_-1px_0_0_black] overflow-hidden">
                             <table className="w-full text-left text-sm md:text-base">
                                 <tbody>
                                     {tripData.map((item, index) => (

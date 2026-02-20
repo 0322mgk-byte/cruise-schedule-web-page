@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 w-full h-14 md:h-20 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled || menuOpen
+      className={`fixed top-0 w-full h-12 md:h-20 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled || menuOpen
         ? "md:bg-white/80 md:backdrop-blur-md md:border-b md:border-gray-200 md:shadow-sm"
         : "md:bg-transparent md:border-b md:border-white/30"
         }`}
@@ -48,8 +48,8 @@ export default function Header() {
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen
-            ? <X className="w-9 h-9 text-white" strokeWidth={1} />
-            : <Menu className="w-9 h-9 text-white" strokeWidth={1} />
+            ? <X className="w-7 h-7 text-white" strokeWidth={1} />
+            : <Menu className="w-7 h-7 text-white" strokeWidth={1} />
           }
         </button>
 

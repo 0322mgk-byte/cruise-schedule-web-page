@@ -143,15 +143,16 @@ function AccordionItem({ section, index, openSet, toggle, isLast }: {
     );
 }
 
-function MobileAccordionItem({ section, index, openSet, toggle }: {
+function MobileAccordionItem({ section, index, openSet, toggle, isLast }: {
     section: typeof checklistData[number];
     index: number;
     openSet: Set<number>;
     toggle: (index: number) => void;
+    isLast?: boolean;
 }) {
     const isOpen = openSet.has(index);
     return (
-        <div className="bg-white border-y border-gray-300 overflow-hidden">
+        <div className="bg-white border-t border-gray-300 overflow-hidden">
             <button
                 onClick={() => toggle(index)}
                 className="w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
@@ -195,7 +196,7 @@ export default function Checklist() {
         .filter((_, i) => i % 2 === 1);
 
     return (
-        <section id="checklist" className="py-12 md:py-20 bg-gray-100">
+        <section id="checklist" className="py-12 md:py-20 bg-white">
             <div className="max-w-6xl mx-auto px-0 md:px-6">
                 <div className="text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
@@ -209,14 +210,14 @@ export default function Checklist() {
                 {/* 모바일: 개별 카드 아코디언 */}
                 <div className="mt-6 md:hidden max-w-5xl mx-auto grid grid-cols-1 gap-3">
                     {checklistData.map((section, index) => (
-                        <MobileAccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} />
+                        <MobileAccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} isLast={index === checklistData.length - 1} />
                     ))}
                 </div>
 
                 {/* 데스크톱: 독립 2열 */}
                 <div className="mt-10 max-w-5xl mx-auto hidden md:flex gap-x-10">
                     {[leftItems, rightItems].map((columnItems, col) => (
-                        <div key={col} className="flex-1 bg-white border border-gray-200 border-t-0 shadow-[0_-2px_0_0_black]">
+                        <div key={col} className="flex-1 bg-white border border-gray-200 border-t-0 shadow-[0_-1px_0_0_black]">
                             {columnItems.map(({ section, index }, i) => (
                                 <AccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} isLast={i === columnItems.length - 1} />
                             ))}

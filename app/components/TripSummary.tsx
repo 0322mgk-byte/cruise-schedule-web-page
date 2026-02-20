@@ -17,8 +17,8 @@ export default function TripSummary() {
 
     return (
         <>
-            {/* Section 8 */}
-            <section id="trip-summary" className="py-12 md:py-20 bg-white">
+            {/* Section 9 */}
+            <section id="trip-summary" className="py-12 md:py-20 bg-gray-100">
                 <div className="max-w-6xl mx-auto px-0 md:px-6">
                     <div className="text-center">
                         <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
@@ -126,7 +126,7 @@ export default function TripSummary() {
 
                     {/* 데스크탑: 원래 테이블 레이아웃 */}
                     <div className="mt-10 max-w-5xl mx-auto hidden md:block">
-                        <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-2px_0_0_black] overflow-hidden">
+                        <div className="bg-white border border-gray-300 border-t-0 shadow-[0_-1px_0_0_black] overflow-hidden">
                             <div className="flex flex-row">
                                 <div className="bg-white font-semibold text-gray-700 px-6 py-5 w-52 text-lg whitespace-nowrap text-left flex items-start justify-start gap-2 flex-shrink-0">
                                     <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
