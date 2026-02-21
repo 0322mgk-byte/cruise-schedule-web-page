@@ -40,7 +40,7 @@ export default function ProductInfo() {
                         {/* 모바일: 아코디언 헤더 */}
                         <button
                             onClick={() => setIncludedOpen(!includedOpen)}
-                            className="md:hidden w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                            className={`md:hidden w-full px-5 py-3 flex items-center justify-between bg-white ${includedOpen ? "border-b border-gray-300" : ""}`}
                         >
                             <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -75,7 +75,7 @@ export default function ProductInfo() {
                         {/* 모바일: 아코디언 헤더 */}
                         <button
                             onClick={() => setExcludedOpen(!excludedOpen)}
-                            className="md:hidden w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                            className={`md:hidden w-full px-5 py-3 flex items-center justify-between bg-white ${excludedOpen ? "border-b border-gray-300" : ""}`}
                         >
                             <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
                                 <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

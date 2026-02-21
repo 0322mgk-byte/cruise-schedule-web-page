@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Phone, ChevronUp, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Phone, ChevronUp, ChevronDown, X, Copy, MessageCircle } from "lucide-react";
 
 export default function MobileBottomBar() {
     const [expanded, setExpanded] = useState(false);
+    const [showInquiry, setShowInquiry] = useState(false);
+    const [copied, setCopied] = useState(false);
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
     const [infants, setInfants] = useState(0);
@@ -17,6 +19,58 @@ export default function MobileBottomBar() {
 
     const formatPrice = (price: number) =>
         price.toLocaleString("ko-KR") + "원";
+
+    const getInquiryText = () => {
+        const parts: string[] = [];
+        if (adults > 0) parts.push(`성인 ${adults}명`);
+        if (children > 0) parts.push(`소아 ${children}명`);
+        if (infants > 0) parts.push(`유아 ${infants}명`);
+        return `${parts.join(", ")}, 총 예상 비용 ${formatPrice(totalPrice)} 견적 문의합니다.`;
+    };
+
+    const openInquiry = () => {
+        setShowInquiry(true);
+        history.pushState({ modal: "inquiry" }, "");
+    };
+    const closeInquiry = () => {
+        if (showInquiry) {
+            setShowInquiry(false);
+            history.back();
+        }
+    };
+
+    const handleCopy = async () => {
+        const text = getInquiryText();
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    useEffect(() => {
+        const onPopState = () => setShowInquiry(false);
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
+
+    useEffect(() => {
+        if (showInquiry) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [showInquiry]);
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
@@ -166,20 +220,81 @@ export default function MobileBottomBar() {
                     >
                         <Phone className="w-5 h-5 text-[#0054a0]" />
                     </a>
-                    <a
-                        href="#contact"
+                    <button
+                        onClick={() => setExpanded(!expanded)}
                         className="flex-1 flex items-center justify-center bg-white text-[#0054a0] font-bold text-sm border-r border-[#003d75]"
                     >
-                        예약 문의
-                    </a>
-                    <a
-                        href="#contact"
+                        요금 계산기
+                    </button>
+                    <button
+                        onClick={openInquiry}
                         className="flex-1 flex items-center justify-center bg-[#0054a0] text-white font-bold text-sm"
                     >
-                        예약하기
-                    </a>
+                        문의하기
+                    </button>
                 </div>
             </div>
+
+            {/* 문의하기 팝업 */}
+            {showInquiry && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50" onClick={closeInquiry} />
+                    <div className="relative z-10 bg-white w-full max-h-[80vh] overflow-y-auto">
+                        {/* 헤더 */}
+                        <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 py-2.5">
+                            <h3 className="text-sm font-bold">문의하기</h3>
+                            <button onClick={closeInquiry} className="hover:bg-[#004080] p-1 transition-colors">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* 내용 */}
+                        <div className="px-4 py-4">
+                            {/* 견적 문의 텍스트 */}
+                            <div className="bg-gray-50 border border-gray-200 p-3">
+                                <p className="text-sm text-gray-900 leading-relaxed">{getInquiryText()}</p>
+                            </div>
+
+                            {/* 버튼 2개 */}
+                            <div className="flex gap-2.5 mt-3">
+                                <button
+                                    onClick={handleCopy}
+                                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-300 bg-white text-gray-700 font-medium text-base rounded-md hover:bg-gray-50 transition-colors"
+                                >
+                                    <Copy className="w-3.5 h-3.5" />
+                                    {copied ? "복사 완료!" : "복사하기"}
+                                </button>
+                                <a
+                                    href="https://open.kakao.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#FEE500] text-[#391B1B] font-medium text-base rounded-md hover:bg-[#F5DC00] transition-colors"
+                                >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                    카톡 문의
+                                </a>
+                            </div>
+
+                            {/* 구분선 */}
+                            <div className="border-t border-gray-200 my-3" />
+
+                            {/* 안내 문구 */}
+                            <p className="text-xs text-gray-600 leading-relaxed">
+                                일정표 잘 보셨나요? 더 궁금하신 점이나 인원별 상세 견적은 지금 보고 계신 카톡으로 편하게 말씀해 주세요!
+                            </p>
+
+                            {/* 구분선 */}
+                            <div className="border-t border-gray-200 my-3" />
+
+                            {/* 예약 프로세스 */}
+                            <div>
+                                <p className="text-xs font-bold text-gray-900 mb-1">[예약 프로세스 요약]</p>
+                                <p className="text-xs text-gray-600">금액 확인 ➔ 카톡 문의 ➔ 맞춤 상담 ➔ 예약 확정</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

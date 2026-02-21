@@ -35,7 +35,7 @@ export default function TripSummary() {
                         <div className="bg-white border border-gray-300 overflow-hidden">
                             <button
                                 onClick={() => setCancelOpen(!cancelOpen)}
-                                className="w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                                className={`w-full px-5 py-3 flex items-center justify-between bg-white ${cancelOpen ? "border-b border-gray-300" : ""}`}
                             >
                                 <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
                                     <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@ export default function TripSummary() {
                         <div className="bg-white border border-gray-300 overflow-hidden">
                             <button
                                 onClick={() => setNoticeOpen(!noticeOpen)}
-                                className="w-full border-b border-gray-300 px-5 py-4 flex items-center justify-between bg-gray-50"
+                                className={`w-full px-5 py-3 flex items-center justify-between bg-white ${noticeOpen ? "border-b border-gray-300" : ""}`}
                             >
                                 <span className="inline-flex items-center gap-2 font-bold text-gray-900 text-base">
                                     <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">

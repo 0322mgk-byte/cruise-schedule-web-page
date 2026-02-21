@@ -229,6 +229,71 @@ export const Timeline = () => {
       setOpenDays(new Set(scheduleDataBase.map((item) => item.day)));
     }
   }, []);
+
+  const mobileBtnAnchorRef = useRef<HTMLParagraphElement>(null);
+  const mobileBtnRef = useRef<HTMLDivElement>(null);
+  const accordionWrapperRef = useRef<HTMLDivElement>(null);
+  const isAllDaysOpen = scheduleDataBase.every((item) => openDays.has(item.day));
+
+  const toggleAllMobile = () => {
+    const allDays = scheduleDataBase.map((item) => item.day);
+    if (isAllDaysOpen) {
+      setOpenDays(new Set());
+      const headerHeight = 56;
+      const offset = 12;
+      const top = (sectionRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - headerHeight - offset;
+      window.scrollTo({ top, behavior: "instant" });
+    } else {
+      setOpenDays(new Set(allDays));
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth >= 768) return;
+      const anchor = mobileBtnAnchorRef.current;
+      const section = sectionRef.current;
+      const btn = mobileBtnRef.current;
+      const wrapper = accordionWrapperRef.current;
+      if (!anchor || !section || !btn || !wrapper) return;
+
+      const stickyTop = 68;
+      const btnHeight = btn.offsetHeight;
+      const anchorTop = anchor.getBoundingClientRect().top;
+      const sectionBottom = section.getBoundingClientRect().bottom;
+
+      if (anchorTop > stickyTop) {
+        // hidden
+        btn.style.position = 'fixed';
+        btn.style.top = `${stickyTop}px`;
+        btn.style.right = '16px';
+        btn.style.bottom = 'auto';
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
+      } else if (sectionBottom > stickyTop + btnHeight) {
+        // fixed
+        btn.style.position = 'fixed';
+        btn.style.top = `${stickyTop}px`;
+        btn.style.right = '16px';
+        btn.style.bottom = 'auto';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+      } else {
+        // stopped at section bottom
+        btn.style.position = 'absolute';
+        btn.style.top = 'auto';
+        btn.style.right = '16px';
+        btn.style.bottom = '0';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -1840,32 +1905,36 @@ export const Timeline = () => {
         <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
           상세 일정
         </h2>
-        <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
+        <p ref={mobileBtnAnchorRef} className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
           2026년 8월 3일 — 8월 10일 (8박 10일)
         </p>
 
         {/* Accordion Section */}
-        <div className="mt-6 md:mt-10 max-w-5xl mx-auto">
-          {/* 모바일 모두펼침/모두접기 버튼 */}
-          <div className="md:hidden sticky top-[68px] z-10 flex justify-end px-4 mb-3">
+        <div ref={accordionWrapperRef} className="mt-6 md:mt-10 max-w-5xl mx-auto relative">
+          {/* 데스크톱 모두펼침/모두접기 버튼 */}
+          <button
+            onClick={() => {
+              const allDays = scheduleDataBase.map((item) => item.day);
+              const allOpen = allDays.every((day) => openDays.has(day));
+              if (allOpen) {
+                setOpenDays(new Set());
+              } else {
+                setOpenDays(new Set(allDays));
+              }
+            }}
+            className="absolute -top-8 right-0 hidden md:flex text-sm md:text-base text-gray-500 hover:text-gray-700 transition-colors cursor-pointer items-center gap-1"
+          >
+            {scheduleDataBase.every((item) => openDays.has(item.day)) ? "모두 접기" : "모두 펼침"}
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${scheduleDataBase.every((item) => openDays.has(item.day)) ? "rotate-180" : ""}`} />
+          </button>
+          {/* 모바일: 모두펼침 버튼 (DOM 직접 조작) */}
+          <div ref={mobileBtnRef} className="md:hidden z-10" style={{ position: 'fixed', top: '68px', right: '16px', opacity: 0, pointerEvents: 'none' }}>
             <button
-              onClick={() => {
-                const allDays = scheduleDataBase.map((item) => item.day);
-                const allOpen = allDays.every((day) => openDays.has(day));
-                if (allOpen) {
-                  setOpenDays(new Set());
-                  const headerHeight = 56;
-                  const offset = 12;
-                  const top = (sectionRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - headerHeight - offset;
-                  window.scrollTo({ top, behavior: "instant" });
-                } else {
-                  setOpenDays(new Set(allDays));
-                }
-              }}
-              className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 flex items-center gap-1"
+              onClick={toggleAllMobile}
+              className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 cursor-pointer flex items-center gap-1"
             >
-              {scheduleDataBase.every((item) => openDays.has(item.day)) ? "모두접기" : "모두펼침"}
-              <ChevronDown className={`w-4 h-4 transition-transform ${scheduleDataBase.every((item) => openDays.has(item.day)) ? "rotate-180" : ""}`} />
+              {isAllDaysOpen ? "모두접기" : "모두펼침"}
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isAllDaysOpen ? "rotate-180" : ""}`} />
             </button>
           </div>
           <div ref={sectionRef} className="space-y-3 md:space-y-6">
@@ -1927,7 +1996,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={vancouverImages[carouselIndex]} alt={`밴쿠버 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2002,7 +2071,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={gastownImages[carouselIndex]} alt={`개스타운 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2076,7 +2145,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={canadaPlaceImages[carouselIndex]} alt={`캐나다 플레이스 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2151,7 +2220,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={activeImages[carouselIndex]} alt={`스탠리 공원 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2226,7 +2295,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={activeImages[carouselIndex]} alt={`에메랄드 프린세스 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2290,7 +2359,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="text-sm text-gray-700 leading-relaxed space-y-5">
                 <div>
                   <p className="font-semibold text-gray-800">1. 수하물 위탁 (Luggage Drop-off)</p>
@@ -2332,7 +2401,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="text-sm text-gray-700 leading-relaxed space-y-5">
                 <div>
                   <p className="font-semibold text-gray-800">1. 선내 결제 비용 정산 (Settlement)</p>
@@ -2366,7 +2435,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={juneauModalImages[carouselIndex]} alt={`주노 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2437,7 +2506,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="text-base text-gray-700 leading-relaxed space-y-5">
                 <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
                 <div>
@@ -2493,7 +2562,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={skagwayModalImages[carouselIndex]} alt={`스캐그웨이 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2564,7 +2633,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="text-base text-gray-700 leading-relaxed space-y-5">
                 <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
                 <div>
@@ -2610,7 +2679,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={ketchikanModalImages[carouselIndex]} alt={`케치칸 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2681,7 +2750,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="text-base text-gray-700 leading-relaxed space-y-5">
                 <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
                 <div>
@@ -2735,7 +2804,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={endicottArmModalImages[carouselIndex]} alt={`엔디캇 암 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2807,7 +2876,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={activeImages[carouselIndex]} alt={`크루즈 시설 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2869,7 +2938,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={activeImages[carouselIndex]} alt={`크루즈 내부 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
@@ -2925,7 +2994,7 @@ export const Timeline = () => {
                 <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-4 pb-28 md:p-6">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src={chinatownImages[carouselIndex]} alt={`차이나타운 ${carouselIndex + 1}`} className="w-full h-full object-cover" />

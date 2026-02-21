@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Ship, Facebook, Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -9,12 +9,13 @@ export default function Footer() {
                     <div className="md:col-span-1">
                         {/* 모바일 */}
                         <Link href="/" className="md:hidden flex items-center gap-2 mb-6">
-                            <span className="font-bold text-xl tracking-tight">한세계 여행사</span>
+                            <img src="/header/KakaoTalk_20260220_105453762_02 12.png" alt="한세계여행사 로고" className="h-7 w-auto" />
+                            <span className="font-bold text-xl tracking-tight">한세계여행사</span>
                         </Link>
                         {/* 데스크탑 */}
                         <Link href="/" className="hidden md:flex items-center gap-2 mb-6">
-                            <Ship className="w-8 h-8 text-gray-400" />
-                            <span className="font-bold text-xl tracking-tight">Emerald Princess</span>
+                            <img src="/header/KakaoTalk_20260220_105453762_02 12.png" alt="한세계여행사 로고" className="h-8 w-auto" />
+                            <span className="font-bold text-xl tracking-tight">한세계여행사</span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             꿈꾸던 크루즈 여행, 에메랄드 프린세스와 함께하세요.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Maximize2, BedDouble, Refrigerator, Tv, Bath, Waves, ConciergeBell, DoorClosed, Armchair, Wind, Lock, AppWindow } from "lucide-react";
 
 const features = [
@@ -68,6 +68,18 @@ const features = [
 
 export default function Features() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [activeCard, setActiveCard] = useState(0);
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const scrollLeft = el.scrollLeft;
+        const cardWidth = el.querySelector<HTMLElement>(":scope > div")?.offsetWidth ?? 0;
+        const gap = 20;
+        const index = Math.round(scrollLeft / (cardWidth + gap));
+        setActiveCard(Math.min(index, features.length - 1));
+    }, []);
 
     const openModal = (index: number) => {
         setSelectedIndex(index);
@@ -109,11 +121,56 @@ export default function Features() {
                         바다 위의 호텔, 객실별 상세 시설 확인하기
                     </p>
 
-                    <div className="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+                    {/* Mobile: horizontal scroll */}
+                    <div className="mt-6 md:hidden overflow-hidden">
+                    <div
+                        ref={scrollRef}
+                        onScroll={handleScroll}
+                        className="flex gap-5 overflow-x-auto snap-x snap-mandatory pl-5 scroll-pl-5 -mb-5 pb-5"
+                    >
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="bg-white rounded-none md:rounded-lg shadow-lg md:shadow-md border-y border-gray-200 md:border md:border-gray-200 md:border-b-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden cursor-pointer"
+                                className={`flex-shrink-0 w-[80vw] bg-white shadow-md border border-gray-300 overflow-hidden cursor-pointer snap-start snap-always ${index === features.length - 1 ? "mr-5" : ""}`}
+                                onClick={() => openModal(index)}
+                            >
+                                <div className="aspect-[3/2] overflow-hidden">
+                                    <img
+                                        src={feature.image}
+                                        alt={feature.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div className="px-4 pt-4 pb-3 text-left">
+                                    <h3 className="text-[17px] font-semibold text-gray-900">{feature.name}</h3>
+                                    {feature.subtitle && (
+                                        <p className="text-sm text-gray-500 mt-1">{feature.subtitle}</p>
+                                    )}
+                                    <span className="text-sm text-gray-900 font-medium mt-2 inline-flex items-center gap-1 transition-all duration-300 animate-heartbeat">
+                                        <span className="group-hover:underline underline-offset-4">자세히 보기</span>
+                                        <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    </div>
+                    {/* Dot indicators */}
+                    <div className="flex md:hidden justify-center gap-2 mt-6 pb-2">
+                        {features.map((_, index) => (
+                            <span
+                                key={index}
+                                className={`block rounded-full transition-all duration-300 ${index === activeCard ? "w-6 h-2 bg-gray-700" : "w-2 h-2 bg-gray-300"}`}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Desktop: 3-column grid */}
+                    <div className="mt-10 hidden md:grid md:grid-cols-3 gap-6">
+                        {features.map((feature, index) => (
+                            <div
+                                key={index}
+                                className="bg-white rounded-lg shadow-md border border-gray-200 border-b-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden cursor-pointer"
                                 onClick={() => openModal(index)}
                             >
                                 <div className="aspect-[16/9] overflow-hidden">
@@ -123,7 +180,7 @@ export default function Features() {
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 </div>
-                                <div className="px-6 md:px-6 py-5 md:py-5 text-left">
+                                <div className="px-6 py-5 text-left">
                                     <h3 className="text-lg font-semibold text-gray-900">{feature.name}</h3>
                                     {feature.subtitle && (
                                         <p className="text-sm text-gray-500 mt-1">{feature.subtitle}</p>
@@ -158,7 +215,7 @@ export default function Features() {
                                     />
                                 </div>
                             </div>
-                            <div className="p-4 md:px-6 md:pb-6">
+                            <div className="p-4 pb-28 md:px-6 md:pb-6">
                                 <div className="mt-4 md:mt-6 text-sm md:text-base text-gray-700 leading-relaxed space-y-3 text-left">
                                     {features[selectedIndex].subtitle && (
                                         <h4 className="text-base md:text-lg font-bold text-gray-900">{features[selectedIndex].subtitle}</h4>
