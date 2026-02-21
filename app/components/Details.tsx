@@ -1,5 +1,11 @@
 "use client";
 
+declare global {
+    interface Window {
+        onYouTubeIframeAPIReady?: (() => void) | undefined;
+    }
+}
+
 import { useEffect, useRef } from "react";
 
 export default function Details() {
