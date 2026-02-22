@@ -9,7 +9,14 @@
       "Bash(copy:*)",
       "WebSearch",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\n1차 MVP: 규정 및 유의사항 완성\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n1차 MVP: 규정 및 유의사항 완성\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(done)",
+      "Bash(head:*)",
+      "mcp__sequential-thinking__sequentialthinking"
     ]
   }
 }

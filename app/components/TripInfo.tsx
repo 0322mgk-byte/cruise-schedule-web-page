@@ -10,10 +10,12 @@ export default function TripInfo() {
                     <div className="px-5 py-2 md:py-4 space-y-1">
                         {/* 모바일 */}
                         <div className="md:hidden">
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="inline-block w-16">한국출발</span>08/03 (월) 17:45</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="inline-block w-16">현지도착</span>08/03 (월) 11:35</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="inline-block w-16">현지출발</span>08/11 (화) 00:00</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="inline-block w-16">한국도착</span>08/12 (수) 00:00</div>
+                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국출발</span>08/03 (월) 17:45</div>
+                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지도착</span>08/03 (월) 11:35</div>
+                            <div className="text-gray-500 text-sm mt-0.5 mb-3">→ 총 9시간 55분 소요</div>
+                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지출발</span>08/11 (화) 00:00</div>
+                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국도착</span>08/12 (수) 00:00</div>
+                            <div className="text-gray-500 text-sm mt-0.5 mb-1">→ 총 11시간 35분 소요</div>
                         </div>
                         {/* 데스크탑 */}
                         <div className="hidden md:block space-y-1 font-normal leading-relaxed text-gray-600">

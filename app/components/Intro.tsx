@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Highlight {
@@ -110,28 +110,60 @@ export default function Intro() {
     };
 
     const touchStartX = useRef(0);
-    const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+    const [dragOffset, setDragOffset] = useState(0);
+    const isTouching = useRef(false);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const startAutoSlide = useCallback(() => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setIsTransitioning(true);
+            setImageIndex((prev) => prev + 1);
+        }, 2500);
+    }, []);
+
+    const stopAutoSlide = useCallback(() => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+    }, []);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        isTouching.current = true;
+        touchStartX.current = e.touches[0].clientX;
+        setIsTransitioning(false);
+        setDragOffset(0);
+        stopAutoSlide();
+    };
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isTouching.current) return;
+        const currentX = e.touches[0].clientX;
+        const diff = currentX - touchStartX.current;
+        setDragOffset(diff);
+    };
     const handleTouchEnd = (e: React.TouchEvent) => {
+        if (!isTouching.current) return;
+        isTouching.current = false;
         const diff = touchStartX.current - e.changedTouches[0].clientX;
+        setDragOffset(0);
+        setIsTransitioning(true);
         if (Math.abs(diff) > 50) {
             diff > 0 ? nextImage() : prevImage();
         }
+        startAutoSlide();
     };
 
     useEffect(() => {
         if (selectedIndex !== null) {
             document.body.style.overflow = "hidden";
-            const images = facilities[selectedIndex].images;
-            const timer = setInterval(() => {
-                setIsTransitioning(true);
-                setImageIndex((prev) => prev + 1);
-            }, 3000);
-            return () => clearInterval(timer);
+            startAutoSlide();
+            return () => { stopAutoSlide(); document.body.style.overflow = ""; };
         } else {
             document.body.style.overflow = "";
         }
         return () => { document.body.style.overflow = ""; };
-    }, [selectedIndex]);
+    }, [selectedIndex, startAutoSlide, stopAutoSlide]);
 
     return (
         <>
@@ -184,14 +216,15 @@ export default function Intro() {
                             </div>
                             <div className="md:px-6 md:pt-6">
                             <div
-                                className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-gray-200 overflow-hidden group/carousel"
+                                className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-gray-200 overflow-hidden group/carousel touch-pan-y"
                                 onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
                                 onTouchEnd={handleTouchEnd}
                             >
                                 <div
                                     ref={carouselRef}
                                     className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
-                                    style={{ transform: `translateX(-${imageIndex * 100}%)` }}
+                                    style={{ transform: `translateX(calc(-${imageIndex * 100}% + ${dragOffset}px))` }}
                                     onTransitionEnd={handleTransitionEnd}
                                 >
                                     {currentImages.map((src, i) => (

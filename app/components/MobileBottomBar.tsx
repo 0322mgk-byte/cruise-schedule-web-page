@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Phone, ChevronUp, ChevronDown, X, Copy, MessageCircle } from "lucide-react";
 
 export default function MobileBottomBar() {
@@ -10,10 +10,51 @@ export default function MobileBottomBar() {
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
     const [infants, setInfants] = useState(0);
+    const [activeRoom, setActiveRoom] = useState<string>("inside");
+    const touchStartY = useRef<number | null>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
 
-    const adultPrice = 4890000;
-    const childPrice = 4890000;
-    const infantPrice = 4890000;
+    useEffect(() => {
+        const el = panelRef.current;
+        if (!el) return;
+
+        const onTouchStart = (e: TouchEvent) => {
+            touchStartY.current = e.touches[0].clientY;
+        };
+        const onTouchMove = (e: TouchEvent) => {
+            if (touchStartY.current !== null && expanded) {
+                const diff = e.touches[0].clientY - touchStartY.current;
+                if (diff > 0) e.preventDefault();
+            }
+        };
+        const onTouchEnd = (e: TouchEvent) => {
+            if (touchStartY.current !== null && expanded) {
+                const diff = e.changedTouches[0].clientY - touchStartY.current;
+                if (diff > 40) setExpanded(false);
+            }
+            touchStartY.current = null;
+        };
+
+        el.addEventListener("touchstart", onTouchStart, { passive: true });
+        el.addEventListener("touchmove", onTouchMove, { passive: false });
+        el.addEventListener("touchend", onTouchEnd, { passive: true });
+        return () => {
+            el.removeEventListener("touchstart", onTouchStart);
+            el.removeEventListener("touchmove", onTouchMove);
+            el.removeEventListener("touchend", onTouchEnd);
+        };
+    }, [expanded]);
+
+    const ROOM_TABS = [
+        { key: "inside", label: "인사이드", price: 5790000 },
+        { key: "oceanview", label: "오션뷰", price: 5990000 },
+        { key: "balcony", label: "발코니", price: 6490000 },
+    ] as const;
+
+    const currentRoom = ROOM_TABS.find((t) => t.key === activeRoom)!;
+    const adultPrice = currentRoom.price;
+    const childPrice = currentRoom.price;
+    const infantPrice = currentRoom.price;
 
     const totalPrice = adults * adultPrice + children * childPrice + infants * infantPrice;
 
@@ -104,7 +145,11 @@ export default function MobileBottomBar() {
                     {/* 하단바 뒤까지 연장 */}
                     <div className="absolute left-0 right-0 top-full h-[53px] bg-white z-10" />
                     {/* 콘텐츠 */}
-                    <div className="relative z-10" style={{ paddingTop: "24px" }}>
+                    <div
+                        ref={panelRef}
+                        className="relative z-10"
+                        style={{ paddingTop: "24px" }}
+                    >
                         {/* 탭 버튼 */}
                         <button
                             onClick={() => setExpanded(!expanded)}
@@ -117,96 +162,109 @@ export default function MobileBottomBar() {
                                 <ChevronUp className="w-5 h-5 text-gray-400" />
                             )}
                         </button>
-                        <div className="px-5 pt-5 pb-4">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">인원</h3>
-
-                        {/* 성인 */}
-                        <div className="flex items-center justify-between py-3">
-                            <div>
-                                <div className="text-base text-gray-700">성인 <span className="text-sm">(만 12세 이상)</span></div>
-                                <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(adults * adultPrice)}</div>
+                        <div className="px-7 pt-7 pb-6">
+                            <div className="flex items-center justify-center gap-1.5 mb-4">
+                                {ROOM_TABS.map((tab) => (
+                                    <button
+                                        key={tab.key}
+                                        onClick={() => setActiveRoom(tab.key)}
+                                        className={`px-3.5 py-1.5 w-20 flex-shrink-0 text-sm font-semibold transition-colors border ${activeRoom === tab.key
+                                                ? "bg-[#0054a0] text-white border-transparent"
+                                                : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
+                                            }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
                             </div>
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => setAdults(Math.max(1, adults - 1))}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
-                                >
-                                    −
-                                </button>
-                                <span className="w-9 h-9 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
-                                    {adults}
-                                </span>
-                                <button
-                                    onClick={() => setAdults(adults + 1)}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
-                                >
-                                    +
-                                </button>
+
+                            {/* 성인 */}
+                            <div className="flex items-center justify-between py-2">
+                                <div>
+                                    <div className="text-base text-gray-700">성인 <span className="text-sm">(만 12세 이상)</span></div>
+                                    <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(adults * adultPrice)}</div>
+                                </div>
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => setAdults(Math.max(1, adults - 1))}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-10 h-11 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
+                                        {adults}
+                                    </span>
+                                    <button
+                                        onClick={() => setAdults(adults + 1)}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 아동 */}
+                            <div className="flex items-center justify-between py-2">
+                                <div>
+                                    <div className="text-base text-gray-700">소아 <span className="text-sm">(만 12세 미만)</span></div>
+                                    <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(childPrice)}</div>
+                                </div>
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => setChildren(Math.max(0, children - 1))}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-10 h-11 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
+                                        {children}
+                                    </span>
+                                    <button
+                                        onClick={() => setChildren(children + 1)}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 유아 */}
+                            <div className="flex items-center justify-between py-2">
+                                <div>
+                                    <div className="text-base text-gray-700">유아 <span className="text-sm">(만 2세 미만)</span></div>
+                                    <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(infantPrice)}</div>
+                                </div>
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => setInfants(Math.max(0, infants - 1))}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-10 h-11 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
+                                        {infants}
+                                    </span>
+                                    <button
+                                        onClick={() => setInfants(infants + 1)}
+                                        className="w-10 h-11 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 구분선 */}
+                            <div className="border-t border-gray-200 mt-2 mb-3" />
+
+                            {/* 총계 */}
+                            <div className="flex items-start justify-between">
+                                <div className="text-base font-bold text-gray-900">총 결제 예정 금액</div>
+                                <div className="text-right">
+                                    <div className="text-xl font-bold text-gray-900">{formatPrice(totalPrice)}</div>
+                                    <div className="text-sm text-gray-500 mt-0.5">유류할증료&제세공과금 포함</div>
+                                </div>
                             </div>
                         </div>
-
-                        {/* 아동 */}
-                        <div className="flex items-center justify-between py-3">
-                            <div>
-                                <div className="text-base text-gray-700">소아 <span className="text-sm">(만 12세 미만)</span></div>
-                                <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(childPrice)}</div>
-                            </div>
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => setChildren(Math.max(0, children - 1))}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
-                                >
-                                    −
-                                </button>
-                                <span className="w-9 h-9 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
-                                    {children}
-                                </span>
-                                <button
-                                    onClick={() => setChildren(children + 1)}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* 유아 */}
-                        <div className="flex items-center justify-between py-3">
-                            <div>
-                                <div className="text-base text-gray-700">유아 <span className="text-sm">(만 2세 미만)</span></div>
-                                <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(infantPrice)}</div>
-                            </div>
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => setInfants(Math.max(0, infants - 1))}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-500"
-                                >
-                                    −
-                                </button>
-                                <span className="w-9 h-9 border-t border-b border-gray-300 flex items-center justify-center text-base font-bold">
-                                    {infants}
-                                </span>
-                                <button
-                                    onClick={() => setInfants(infants + 1)}
-                                    className="w-9 h-9 border border-gray-300 flex items-center justify-center text-lg text-gray-800"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* 구분선 */}
-                        <div className="border-t border-gray-200 mt-2 mb-3" />
-
-                        {/* 총계 */}
-                        <div className="flex items-start justify-between">
-                            <div className="text-base font-bold text-gray-900">총 결제 예정 금액</div>
-                            <div className="text-right">
-                                <div className="text-xl font-bold text-gray-900">{formatPrice(totalPrice)}</div>
-                                <div className="text-sm text-gray-500 mt-0.5">유류할증료&제세공과금 포함</div>
-                            </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -270,7 +328,7 @@ export default function MobileBottomBar() {
                                     rel="noopener noreferrer"
                                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#FEE500] text-[#391B1B] font-medium text-base rounded-md hover:bg-[#F5DC00] transition-colors"
                                 >
-                                    <MessageCircle className="w-3.5 h-3.5" />
+                                    <img src="/bottom_bar/image 3.svg" alt="카카오톡" className="w-5 h-5" />
                                     카톡 문의
                                 </a>
                             </div>
@@ -279,7 +337,7 @@ export default function MobileBottomBar() {
                             <div className="border-t border-gray-200 my-3" />
 
                             {/* 안내 문구 */}
-                            <p className="text-xs text-gray-600 leading-relaxed">
+                            <p className="text-sm text-gray-600 leading-relaxed">
                                 일정표 잘 보셨나요? 더 궁금하신 점이나 인원별 상세 견적은 지금 보고 계신 카톡으로 편하게 말씀해 주세요!
                             </p>
 
@@ -288,8 +346,8 @@ export default function MobileBottomBar() {
 
                             {/* 예약 프로세스 */}
                             <div>
-                                <p className="text-xs font-bold text-gray-900 mb-1">[예약 프로세스 요약]</p>
-                                <p className="text-xs text-gray-600">금액 확인 ➔ 카톡 문의 ➔ 맞춤 상담 ➔ 예약 확정</p>
+                                <p className="text-sm font-bold text-gray-900 mb-1">[예약 프로세스 요약]</p>
+                                <p className="text-sm text-gray-600">금액 확인 ➔ 카톡 문의 ➔ 맞춤 상담 ➔ 예약 확정</p>
                             </div>
                         </div>
                     </div>

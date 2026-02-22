@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const LocationPin = () => (
@@ -220,6 +220,1378 @@ const emeraldPrincessModalImages = [
   "/sectrion6/day2/emerald_princess_5.webp",
 ];
 
+const TimelineModals = ({ activeModal, onClose }: { activeModal: string | null; onClose: () => void }) => {
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const isTouching = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const imageMap: Record<string, string[]> = {
+    vancouver: vancouverImages,
+    gastown: gastownImages,
+    canadaplace: canadaPlaceImages,
+    stanleypark: stanleyParkModalImages,
+    chinatown: chinatownImages,
+    emeraldprincess: emeraldPrincessModalImages,
+    cruiseinterior: cruiseAtSeaModalImages,
+    juneau: juneauModalImages,
+    skagway: skagwayModalImages,
+    endicottarm: endicottArmModalImages,
+    ketchikan: ketchikanModalImages,
+    cruiseatsea: cruiseAtSeaModalImages,
+  };
+  const activeImages = activeModal ? imageMap[activeModal] ?? [] : [];
+
+  useEffect(() => {
+    setCarouselIndex(0);
+    setIsTransitioning(true);
+  }, [activeModal]);
+
+  const startAutoSlide = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setIsTransitioning(true);
+      setCarouselIndex((prev) => prev + 1);
+    }, 2500);
+  }, []);
+
+  const stopAutoSlide = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeModal) {
+      const images = imageMap[activeModal] ?? [];
+      if (images.length > 1) {
+        startAutoSlide();
+        return () => { stopAutoSlide(); };
+      }
+    }
+    return () => {};
+  }, [activeModal, startAutoSlide, stopAutoSlide]);
+
+  const prevImage = () => setCarouselIndex((prev) => (prev - 1 + activeImages.length) % activeImages.length);
+  const nextImage = () => {
+    setIsTransitioning(true);
+    setCarouselIndex((prev) => prev + 1);
+  };
+
+  const handleTransitionEnd = () => {
+    if (carouselIndex >= activeImages.length) {
+      setIsTransitioning(false);
+      setCarouselIndex(0);
+    }
+  };
+
+  const applyDragTransform = useCallback((offset: number) => {
+    if (!carouselRef.current) return;
+    carouselRef.current.style.transform = `translateX(calc(-${carouselRef.current.dataset.index ?? "0"}00% + ${offset}px))`;
+  }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isTouching.current = true;
+    touchStartX.current = e.touches[0].clientX;
+    dragOffsetRef.current = 0;
+    setIsTransitioning(false);
+    stopAutoSlide();
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isTouching.current) return;
+    dragOffsetRef.current = e.touches[0].clientX - touchStartX.current;
+    applyDragTransform(dragOffsetRef.current);
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isTouching.current) return;
+    isTouching.current = false;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    dragOffsetRef.current = 0;
+    setIsTransitioning(true);
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? nextImage() : prevImage();
+    }
+    startAutoSlide();
+  };
+
+  if (!activeModal) return null;
+
+  const closeModal = onClose;
+
+  return (
+    <>
+      {/* Vancouver Detail Modal */}
+      {activeModal === "vancouver" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">[관광정보] 밴쿠버 (VANCOUVER)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`밴쿠버 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="밴쿠버 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>캐나다 서부 최대의 도시, 밴쿠버.</p>
+                  <p>태평양과 해안 산맥 사이에 자리한 밴쿠버는 세계에서 가장 살기 좋은 도시 중 하나로 손꼽힙니다. 온화한 기후와 수려한 자연경관, 다양한 문화가 어우러진 이 도시는 매년 수백만 명의 관광객을 끌어들이고 있습니다.</p>
+                  <p>시내에는 역사와 문화가 살아 숨 쉬는 개스타운, 아름다운 항구 전망의 캐나다 플레이스, 도심 속 거대한 숲 스탠리 공원, 북미 최대 규모의 차이나타운 등 다양한 볼거리가 있습니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">북아메리카 캐나다 밴쿠버</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83327.34089692409!2d-123.19394895!3d49.2577143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548673f143a94fb3%3A0xbb9196ea9b81f38b!2z67Cg7L-g67KMLCBC66eI7Yuw7Iuc7Lu464Gg67mE7JWEIOyjvCwg7LqQ64KY64uk!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="밴쿠버 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Gastown Detail Modal */}
+      {activeModal === "gastown" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">밴쿠버에서 가장 오래된 거리, 개스타운 (GASTOWN)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`개스타운 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="개스타운 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>1867년 수다쟁이 선원 &apos;개시 잭&apos; 데이튼이 위스키 한 통으로 술집을 열면서 탄생한 밴쿠버의 발상지입니다.</p>
+                  <p>자갈이 깔린 거리 위로 빅토리아풍 붉은 벽돌 건물이 늘어서 있고, 15분마다 증기를 내뿜는 세계 유일의 증기시계(Steam Clock)가 이 거리의 상징입니다. 위스키 배럴 위에 올라선 개시 잭 동상도 놓치지 마세요.</p>
+                  <p>감각적인 부티크와 갤러리, 분위기 좋은 레스토랑이 즐비해 산책만으로도 충분히 매력적인 곳입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 동쪽, 워터프론트역 인근</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Gastown,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (야외 거리)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10410!2d-123.1058!3d49.2844!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486717f41ba3855%3A0xcfba5e6689bae30a!2sGastown!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="개스타운 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Canada Place Detail Modal */}
+      {activeModal === "canadaplace" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">밴쿠버 항구의 랜드마크, 캐나다 플레이스 (CANADA PLACE)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`캐나다 플레이스 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="캐나다 플레이스 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>1986년 세계박람회(EXPO 86)를 위해 건설된 캐나다관이 전신으로, 찰스 왕세자가 직접 개관했습니다. 박람회 기간 동안 500만 명 이상의 방문객을 맞이하며 큰 화제를 모았습니다.</p>
+                  <p>다섯 개의 흰색 돛 모양 지붕은 범선을 형상화한 것으로, 밴쿠버 해안 스카이라인의 상징입니다. 매일 정오가 되면 &apos;Heritage Horns&apos;라 불리는 10개의 호른이 캐나다 국가를 울려 퍼뜨립니다.</p>
+                  <p>현재는 알래스카 크루즈 출발 터미널, 밴쿠버 컨벤션센터, 팬퍼시픽 호텔, 그리고 시뮬레이션 비행 체험 &apos;FlyOver Canada&apos;가 있는 복합문화공간입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">999 Canada Place, Vancouver</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Canada+Place,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (부두 산책 기준)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d-123.1143764!3d49.2890081!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486719d24e2e021%3A0xb7057fe085c86109!2z7LqQ64KY64ukIO2UjOugiOydtOyKpA!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="캐나다 플레이스 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stanley Park Detail Modal */}
+      {activeModal === "stanleypark" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">도심 속 거대한 숲, 스탠리 공원 (STANLEY PARK)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`스탠리 공원 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="스탠리 공원 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>400헥타르의 부지에 50만 그루의 나무가 울창한 북미 최대의 도시 공원입니다. 수백 년 된 나무 중에는 높이 76미터에 달하는 거목도 있으며, 연간 800만 명이 찾는 밴쿠버의 자랑입니다.</p>
+                  <p>세계에서 가장 긴 끊기지 않는 해안 산책로 &apos;시월(Seawall)&apos;은 약 10km에 달하며, 걷는 데 약 3시간이 소요됩니다. 도시 스카이라인과 노스쇼어 산맥, 배라드 만의 풍경이 파노라마처럼 펼쳐집니다.</p>
+                  <p>공원 안에는 밴쿠버 수족관, 퍼스트 네이션 토템폴, 로스트 라군, 프로스펙트 포인트 전망대 등 다양한 볼거리가 있습니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 서쪽 반도</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Stanley+Park,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (공원 진입 기준)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">06:00 ~ 22:00</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10408.5!2d-123.1416!3d49.3043!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548671832a35e18b%3A0x1fbd40096f5d6c43!2sStanley%20Park!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="스탠리 공원 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Emerald Princess Detail Modal */}
+      {activeModal === "emeraldprincess" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">에메랄드 프린세스 (EMERALD PRINCESS)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`에메랄드 프린세스 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="에메랄드 프린세스 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>프린세스 크루즈의 대표 선박, 에메랄드 프린세스.</p>
+                  <p>총 톤수 113,561톤, 전장 290m, 최대 3,114명의 승객을 수용하는 대형 크루즈 선박입니다. 2007년 취항한 이래 전 세계의 다양한 항로를 운항하고 있습니다.</p>
+                  <p>선내에는 다양한 레스토랑과 바, 카지노, 로터스 스파, 수영장 4개, 대극장 &apos;Princess Theatre&apos;, 미니 골프장, 조깅 트랙 등 풍부한 부대시설이 갖추어져 있어 항해 중에도 다채로운 즐거움을 누리실 수 있습니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선사</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">프린세스 크루즈 (Princess Cruises)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">취항</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">2007년</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">총 톤수</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">113,561톤</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">승객 정원</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">최대 3,114명</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">승무원</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">약 1,200명</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">전장</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">290m / 19층 (데크 기준)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Boarding Info Modal */}
+      {activeModal === "boarding" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">📢 에메랄드 프린세스호 승선 수속 안내</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="text-sm text-gray-700 leading-relaxed space-y-5">
+                <div>
+                  <p className="font-semibold text-gray-800">1. 수하물 위탁 (Luggage Drop-off)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>터미널 도착 후 큰 수하물을 위탁하시면 배정된 선실 앞으로 안전하게 배달됩니다.</li>
+                    <li>여권, 승선 서류, 귀중품 및 파손 주의 물품은 반드시 직접 소지하고 탑승해 주세요.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">2. 승선 수속 (Check-in &amp; Boarding)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>준비물: 여권, 크루즈 승선 서류, 해외 결제 가능한 신용카드</li>
+                    <li>위탁 수속 후 체크인 카운터에서 본인 확인 및 수속을 진행합니다.</li>
+                    <li>모든 탑승 수속은 크루즈 출발 시간 2시간 전까지 반드시 완료되어야 합니다.</li>
+                    <li>선실 내에는 신분증, 결제 수단, 객실 키 역할을 하는 &apos;승선 카드&apos;가 비치되어 있습니다. (분실 시 안내 데스크에서 재발급 가능)</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">3. 승선 후 유의사항 (After Boarding)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>필수 안전 교육(Safety Drill): 승선 후 안내에 따라 지정된 장소에서 위급 상황 대처 교육을 이수해야 합니다.</li>
+                    <li>기항지 선택 관광: 선사에서 운영하는 기항지 투어(영어 진행)는 조기 마감될 수 있으므로 승선 첫날 신청하시기를 권장합니다. (변경/취소 시 수수료 발생 가능)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Disembarkation Info Modal */}
+      {activeModal === "disembarkation" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">📢 크루즈 하선 수속 안내</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="text-sm text-gray-700 leading-relaxed space-y-5">
+                <div>
+                  <p className="font-semibold text-gray-800">1. 선내 결제 비용 정산 (Settlement)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li><span className="font-semibold">내역 확인:</span> 하선 전날 저녁 또는 당일 아침, 선실로 상세 결제 내역서가 배달됩니다.</li>
+                    <li><span className="font-semibold">결제 방식:</span> 승선 시 등록한 신용카드로 자동 청구되므로, 내역에 이상이 없다면 별도의 하선 수속 없이 편안하게 대기하시면 됩니다. (현금 결제 희망 시 미화 달러 USD 사용 가능)</li>
+                    <li><span className="font-semibold">안내 데스크:</span> 정산서를 받지 못하셨거나 청구 내역에 문의가 있으신 경우, 승선 카드를 지참하여 고객 안내 데스크(Guest Relations)를 방문해 주세요.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">2. 하선 전 수하물 위탁 (Luggage Drop-off)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li><span className="font-semibold">수하물 내놓기:</span> 하선 전날 선실로 전달되는 &lsquo;전용 수하물 태그&rsquo;를 가방에 부착한 뒤, 선사가 지정한 시간까지 선실 문 밖에 내어주세요. 위탁하신 짐은 하선 후 크루즈 터미널에서 찾으실 수 있습니다.</li>
+                    <li className="text-red-500">⚠️ 주의 사항: 하선 당일 입을 옷, 여권, 승선 카드, 신용카드, 귀중품 및 상비약 등은 <span className="font-semibold">절대 위탁 수하물에 넣지 마시고 반드시 본인이 직접 소지(핸드캐리)</span>하여 하선해 주시기 바랍니다.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Juneau Detail Modal */}
+      {activeModal === "juneau" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">[관광정보] 주노 (JUNEAU)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`주노 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="주노 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>알래스카의 주도, 주노.</p>
+                  <p>빙하와 산, 바다가 어우러진 주노는 도로로 접근할 수 없는 미국 유일의 주도입니다. 1880년 금광이 발견되면서 형성된 이 도시는 웅장한 자연경관 속에 자리 잡고 있습니다.</p>
+                  <p>멘덴홀 빙하(Mendenhall Glacier)는 주노에서 가장 인기 있는 관광지로, 약 19km 길이의 거대한 빙하를 가까이에서 감상할 수 있습니다. 혹등고래 관찰 투어, 연어가 거슬러 오르는 계곡, 그리고 독수리가 서식하는 원시림까지 알래스카의 대자연을 가장 가까이에서 체험할 수 있는 곳입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 주노 (Juneau, Alaska)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Juneau,Alaska,USA" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">약 32,000명</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">멘덴홀 빙하, 트레이시 암, 고래 관찰</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 13°C (서늘, 비 잦음)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://maps.google.com/maps?q=58.3004933,-134.4201306&z=11&hl=ko&output=embed"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="주노 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shore Excursion Info Modal */}
+      {activeModal === "shoreexcursion" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">⚓ 주노(Juneau) 추천 기항지 선택 관광</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="text-base text-gray-700 leading-relaxed space-y-5">
+                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
+                <div>
+                  <p className="font-semibold text-gray-800">1. 멘덴홀 빙하 &amp; 혹등고래 관찰 투어</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: JNU-630</li>
+                    <li>예상 소요 시간: 약 5시간 30분</li>
+                    <li>예상 비용: 성인 $269.95부터~</li>
+                    <li>핵심 포인트: 주노의 상징인 멘덴홀 빙하를 감상하고, 소형 선박에 탑승해 알래스카 야생 혹등고래를 찾아 나서는 베스트셀러 투어입니다.</li>
+                    <li className="text-gray-500">참고 사항: 바닷바람을 막아줄 따뜻한 겉옷 준비가 필수이며, 12세 미만 아동은 반드시 보호자와 동반해야 합니다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">2. 마운트 로버츠 트램웨이 자유 투어</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: JNU-140</li>
+                    <li>예상 소요 시간: 약 1시간 30분</li>
+                    <li>예상 비용: 성인 $63.00부터~</li>
+                    <li>핵심 포인트: 케이블카(트램)를 타고 산에 올라 주노 시내와 바다의 탁 트인 파노라마 전경을 한눈에 담아보세요. 정상에 도착한 후에는 맑은 공기를 마시며 숲길을 따라 가벼운 자유 트레킹을 즐기실 수 있습니다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">3. 멘덴홀 빙하 &amp; 알래스카 연어 바비큐 특식</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: JNU-120</li>
+                    <li>예상 소요 시간: 약 4시간 30분</li>
+                    <li>예상 비용: 성인 $179.95부터~</li>
+                    <li>핵심 포인트: 웅장한 멘덴홀 빙하 방문과 더불어, 아름다운 야외 숲속 레스토랑에서 갓 구워낸 자연산 알래스카 연어와 치킨 바비큐를 무제한으로 맛볼 수 있는 오감 만족 프로그램입니다.</li>
+                    <li className="text-gray-500">참고 사항: 식사 후 라이브 음악과 함께 주변 생태계를 산책하는 여유로운 시간이 주어집니다. 야외 활동을 위한 따뜻한 재킷을 준비해 주세요.</li>
+                  </ul>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
+                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
+                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
+                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Skagway Detail Modal */}
+      {activeModal === "skagway" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">[관광정보] 스캐그웨이 (SKAGWAY)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`스캐그웨이 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="스캐그웨이 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>골드러시의 관문, 스캐그웨이.</p>
+                  <p>1897년 클론다이크 골드러시 당시 수만 명의 금 채굴꾼들이 이 작은 항구 마을을 거쳐 유콘으로 향했습니다. 현재 인구 약 1,200명의 소도시이지만, 브로드웨이 거리에 늘어선 19세기 건물들은 국립역사지구로 보존되어 당시의 분위기를 생생하게 전해줍니다.</p>
+                  <p>화이트패스 & 유콘 루트 철도는 1898년에 건설된 협궤 철도로, 해발 873m의 화이트패스 정상까지 깎아지른 절벽과 폭포, 빙하 계곡을 지나는 세계적으로 유명한 관광 열차입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 스캐그웨이 (Skagway, Alaska)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Skagway,Alaska,USA" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">약 1,200명</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">화이트패스 철도, 브로드웨이 역사지구, 유콘 현수교</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 12°C (서늘, 비 잦음)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://maps.google.com/maps?q=59.4583,-135.3145&z=14&hl=ko&output=embed"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="스캐그웨이 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Skagway Shore Excursion Info Modal */}
+      {activeModal === "shoreexcursion_skagway" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">⚓ 스캐그웨이(Skagway) 추천 기항지 선택 관광</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="text-base text-gray-700 leading-relaxed space-y-5">
+                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
+                <div>
+                  <p className="font-semibold text-gray-800">1. 화이트 패스 산악 경관 열차 투어 (White Pass Scenic Railway)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: SGY-200</li>
+                    <li>예상 소요 시간: 약 2시간 40분</li>
+                    <li>예상 비용: 성인 $159.95부터~</li>
+                    <li>핵심 포인트: 19세기 골드러시 시대의 향수를 간직한 클래식 산악 열차에 탑승해 스캐그웨이의 경이로운 대자연 속으로 들어갑니다. 해발 900m(약 3,000피트)가 넘는 험준한 산맥을 가로지르며 깎아지른 절벽과 압도적인 파노라마 절경을 감상하실 수 있습니다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">2. 헬기 빙하 비행 &amp; 알래스칸 허스키 개썰매 캠프 (Dog Sledding &amp; Glacier Helicopter)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: SGY-840</li>
+                    <li>예상 소요 시간: 약 2시간</li>
+                    <li>예상 비용: 성인 $749.95부터~</li>
+                    <li>핵심 포인트: 헬리콥터를 타고 거대한 빙하 위를 비행하며 알래스카의 환상적인 풍광을 눈에 담는 럭셔리 투어입니다. 이후 약 300여 마리의 늠름한 알래스칸 허스키가 생활하는 눈 덮인 베이스캠프에 직접 착륙하여 잊지 못할 특별한 교감을 나눕니다.</li>
+                    <li className="text-gray-500">참고 사항: 탑승자 체중이 110kg(250lbs) 이상일 경우 안전 및 헬기 하중 규정상 추가 요금이 발생합니다. 13세 미만 아동은 반드시 성인 보호자와 동행해야 하며, 현지 기상 악화 시 안전을 위해 헬기 운항이 취소될 수 있습니다.</li>
+                  </ul>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
+                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
+                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
+                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ketchikan Detail Modal */}
+      {activeModal === "ketchikan" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">[관광정보] 케치칸 (KETCHIKAN)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`케치칸 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="케치칸 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>알래스카의 첫 번째 도시, 케치칸.</p>
+                  <p>알래스카 남동부 레빌라기게도 섬에 자리한 케치칸은 &lsquo;세계 연어의 수도(Salmon Capital of the World)&rsquo;로 불립니다. 매년 여름이면 수백만 마리의 연어가 크리크 거리 아래 개울을 거슬러 올라가는 장관을 눈앞에서 감상할 수 있습니다.</p>
+                  <p>세계 최대 규모의 온대 우림인 통가스 국립공원이 도시를 감싸고 있으며, 틀링깃(Tlingit) 원주민의 문화를 간직한 토템폴 유산센터와 색색의 수상 가옥이 늘어선 크리크 거리는 케치칸의 대표 명소입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 케치칸 (Ketchikan, Alaska)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Ketchikan,Alaska,USA" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">약 8,200명</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">크리크 거리, 토템폴 유산센터, 통가스 국립공원</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 14°C (온화, 비 잦음)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20000!2d-131.6461!3d55.342!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x540198773a045391%3A0x6ea09e3c5e3b6c0a!2sKetchikan%2C%20AK%2C%20USA!5e0!3m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="케치칸 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ketchikan Shore Excursion Info Modal */}
+      {activeModal === "shoreexcursion_ketchikan" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">⚓ 케치칸(Ketchikan) 추천 기항지 선택 관광</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="text-base text-gray-700 leading-relaxed space-y-5">
+                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
+                <div>
+                  <p className="font-semibold text-gray-800">1. 자연 탐험 &amp; 던지니스 게 만찬 (Wilderness Exploration &amp; Crab Feast)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: KTN-650</li>
+                    <li>예상 소요 시간: 약 4시간</li>
+                    <li>예상 비용: 성인 $239.95부터~</li>
+                    <li>핵심 포인트: 세계 최대 규모의 온대 우림인 통가스 국립공원을 거닐며 알래스카의 다채로운 동식물과 대자연을 탐험합니다. 상쾌한 산책 후에는 조지 인렛 롯지로 이동해 푸짐한 던지니스 게 요리를 마음껏 즐기실 수 있습니다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">2. 수륙양용 덕 투어 (Town &amp; Harbor by Duck)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: KTN-660</li>
+                    <li>예상 소요 시간: 약 1시간 30분</li>
+                    <li>예상 비용: 성인 $109.95부터~</li>
+                    <li>핵심 포인트: 미국 해안경비대의 인증을 받은 수륙양용차 &lsquo;덕(Duck)&rsquo;에 탑승해 육지와 바다를 넘나들며 케치칸을 둘러봅니다. 웨일 파크, 연어 길(Salmon ladder), 크리크 거리의 옛이야기를 만나고, 통조림 공장과 수상비행장 등 항구의 활기찬 풍경까지 한 번에 감상할 수 있습니다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">3. 알래스카 럼버잭 쇼 &amp; 게 만찬 (Lumberjack Show &amp; Crab Feast)</p>
+                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+                    <li>투어 코드: KTN-315</li>
+                    <li>예상 소요 시간: 약 4시간</li>
+                    <li>예상 비용: 성인 $144.95부터~</li>
+                    <li>핵심 포인트: 도끼 던지기, 톱질, 나무 타기 등 알래스카 전통 벌목꾼들의 박진감 넘치는 12가지 경연이 펼쳐지는 명물 &lsquo;럼버잭 쇼&rsquo;를 관람합니다. 흥미진진한 공연을 즐긴 뒤, 아름다운 전망의 롯지에서 풍성한 게 요리 만찬이 이어집니다.</li>
+                  </ul>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
+                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
+                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
+                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Endicott Arm Detail Modal */}
+      {activeModal === "endicottarm" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">[관광정보] 엔디캇 암 (ENDICOTT ARM)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`엔디캇 암 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="엔디캇 암 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>알래스카의 숨겨진 보석, 엔디캇 암.</p>
+                  <p>엔디캇 암은 알래스카 남동부에 위치한 약 50km 길이의 장대한 피오르 수로입니다. 수로 끝에는 도스 빙하(Dawes Glacier)가 자리하고 있으며, 거대한 빙벽에서 떨어져 나온 유빙들이 푸른 바다 위를 떠다니는 장관을 연출합니다.</p>
+                  <p>크루즈 선박은 이 좁은 수로를 천천히 항해하며, 승객들은 데크에서 눈앞에 펼쳐지는 빙하와 야생동물(혹등고래, 물개, 대머리 독수리 등)을 가까이서 관찰할 수 있습니다.</p>
+                  <p className="text-red-500">※ 크루즈에서 하선하지 않고 배 위에서 관람하는 일정입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 남동부 엔디캇 암 (Endicott Arm, Alaska)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Endicott+Arm,Alaska,USA" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 볼거리</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">도스 빙하, 피오르 절벽, 유빙, 야생동물</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">관람 방식</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">하선 없이 선상 관람 (Scenic Cruising)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 10°C (바람이 강할 수 있음)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d80000!2d-133.43!3d57.675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x540468f16ef846e5%3A0x3e66b7d739fa3d0!2sEndicott%20Arm!5e0!3m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="엔디캇 암 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cruise At Sea Detail Modal */}
+      {activeModal === "cruiseatsea" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">🚢 에메랄드 프린세스 전일 해상</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`크루즈 시설 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="크루즈 시설 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>선내 자유시간: 수준 높은 무료 공연 관람 및 다채로운 부대시설 이용</p>
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>프리미엄 스파에서 여행의 피로를 부드럽게 풀어보세요.</li>
+                    <li>탁 트인 야외 수영장에서 일광욕을 즐기며 여유롭게 책을 읽어보세요.</li>
+                    <li>오션뷰 조깅 트랙을 달리거나 최신식 피트니스 센터에서 상쾌하게 땀을 흘려보세요.</li>
+                    <li>따뜻한 자쿠지에 몸을 담그고 와인 한 잔의 여유를 만끽해 보세요.</li>
+                    <li>요가, 댄스 강좌, 빙고 등 매일 다채롭게 열리는 선내 프로그램에 참여해 보세요.</li>
+                  </ul>
+                  <p>잔잔한 바다 한가운데서 누리는 이 모든 휴식이 크루즈 여행의 진정한 매력입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선박</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">에메랄드 프린세스 (Emerald Princess)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 시설</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">수영장, 스파, 카지노, 극장, 미니 골프, 조깅 트랙</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">식사</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">메인 다이닝룸, 뷔페, 피자 바, 아이스크림 바 등</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">드레스코드</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">캐주얼 (스마트 캐주얼 권장)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cruise Interior Detail Modal */}
+      {activeModal === "cruiseinterior" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">🚢 에메랄드 프린세스 전일 해상</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`크루즈 내부 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="크루즈 내부 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>오늘은 종일 해상에서 보내는 날입니다. 에메랄드 프린세스의 다양한 시설을 마음껏 즐겨보세요.</p>
+                  <p>수영장 4개와 자쿠지, 로터스 스파에서 여유를 만끽하고, 대극장 &apos;Princess Theatre&apos;에서 브로드웨이 스타일의 공연을 관람하실 수 있습니다. 카지노에서 행운을 시험해보거나, 미니 골프와 조깅 트랙에서 상쾌한 시간을 보내보세요.</p>
+                  <p>메인 다이닝룸과 뷔페 레스토랑에서 세계 각국의 요리를 즐기시고, 야외 데크에서 광활한 태평양의 풍경을 감상하며 특별한 하루를 보내시기 바랍니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선박</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">에메랄드 프린세스 (Emerald Princess)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 시설</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">수영장, 스파, 카지노, 극장, 미니 골프, 조깅 트랙</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">식사</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">메인 다이닝룸, 뷔페, 피자 바, 아이스크림 바 등</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">드레스코드</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">캐주얼 (스마트 캐주얼 권장)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Chinatown Detail Modal */}
+      {activeModal === "chinatown" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
+          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+              <h3 className="text-base md:text-lg font-bold">북미에서 가장 오래된 차이나타운 (CHINATOWN)</h3>
+              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+            <div className="p-4 pb-28 md:p-6">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0"
+                  onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                  <div ref={carouselRef}
+                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                    data-index={carouselIndex}
+                    style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                    onTransitionEnd={handleTransitionEnd}>
+                    {activeImages.map((src, i) => (
+                      <img key={i} src={src} alt={`차이나타운 ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                    {activeImages.length > 0 && (
+                      <img src={activeImages[0]} alt="차이나타운 1" className="w-full h-full object-cover flex-shrink-0" />
+                    )}
+                  </div>
+                  {activeImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                        {(carouselIndex % activeImages.length) + 1}/{activeImages.length}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
+                  <p>1880년대 브리티시 컬럼비아 골드러시와 대륙횡단철도 건설 시대에 형성된 캐나다 최대이자 북미에서 가장 오래된 차이나타운 중 하나입니다.</p>
+                  <p>내셔널 지오그래픽이 &apos;세계 최고의 도시 정원&apos;으로 선정한 쑨원 고전 중국정원(Dr. Sun Yat-Sen Classical Chinese Garden)이 대표적인 볼거리입니다. 중국 전통 양식과 서양 건축이 혼합된 독특한 건물들이 거리를 수놓고 있습니다.</p>
+                  <p>한약재 상점부터 실크 가게, 활기 넘치는 딤섬 레스토랑까지 다양한 볼거리와 먹거리가 가득한 이국적인 거리입니다.</p>
+                </div>
+              </div>
+              <table className="w-full mt-6 border-t border-gray-200 text-sm">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 동쪽, 펜더 스트리트 일대</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">
+                      <a href="https://maps.google.com/?q=Chinatown,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
+                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (거리 관광 기준)</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
+                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 aspect-[4/3]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500!2d-123.1058197!3d49.2801149!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486717a491aa187%3A0x4cd3d8c1acdbacba!2sChinatown!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="차이나타운 지도"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 export const Timeline = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [openDays, setOpenDays] = useState<Set<number>>(new Set());
@@ -295,7 +1667,6 @@ export const Timeline = () => {
   }, []);
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const toggleDay = (day: number) => {
     setOpenDays((prev) => {
@@ -311,7 +1682,6 @@ export const Timeline = () => {
 
   const openModal = (type: string) => {
     setActiveModal(type);
-    setCarouselIndex(0);
     history.pushState({ modal: "timeline" }, "");
   };
 
@@ -330,22 +1700,6 @@ export const Timeline = () => {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const imageMap: Record<string, string[]> = {
-    vancouver: vancouverImages,
-    gastown: gastownImages,
-    canadaplace: canadaPlaceImages,
-    stanleypark: stanleyParkModalImages,
-    chinatown: chinatownImages,
-    emeraldprincess: emeraldPrincessModalImages,
-    cruiseinterior: cruiseAtSeaModalImages,
-    juneau: juneauModalImages,
-    skagway: skagwayModalImages,
-    endicottarm: endicottArmModalImages,
-    ketchikan: ketchikanModalImages,
-    cruiseatsea: cruiseAtSeaModalImages,
-  };
-  const activeImages = activeModal ? imageMap[activeModal] ?? [] : [];
-
   useEffect(() => {
     if (activeModal) {
       document.body.style.overflow = "hidden";
@@ -354,9 +1708,6 @@ export const Timeline = () => {
     }
     return () => { document.body.style.overflow = ""; };
   }, [activeModal]);
-
-  const prevImage = () => setCarouselIndex((prev) => (prev - 1 + activeImages.length) % activeImages.length);
-  const nextImage = () => setCarouselIndex((prev) => (prev + 1) % activeImages.length);
 
   const day1Content = (
     <div className="relative pl-10">
@@ -1985,1078 +3336,7 @@ export const Timeline = () => {
         </div>
       </div>
 
-      {/* Vancouver Detail Modal */}
-      {activeModal === "vancouver" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">[관광정보] 밴쿠버 (VANCOUVER)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={vancouverImages[carouselIndex]} alt={`밴쿠버 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {vancouverImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>캐나다 서부 최대의 도시, 밴쿠버.</p>
-                  <p>태평양과 해안 산맥 사이에 자리한 밴쿠버는 세계에서 가장 살기 좋은 도시 중 하나로 손꼽힙니다. 온화한 기후와 수려한 자연경관, 다양한 문화가 어우러진 이 도시는 매년 수백만 명의 관광객을 끌어들이고 있습니다.</p>
-                  <p>시내에는 역사와 문화가 살아 숨 쉬는 개스타운, 아름다운 항구 전망의 캐나다 플레이스, 도심 속 거대한 숲 스탠리 공원, 북미 최대 규모의 차이나타운 등 다양한 볼거리가 있습니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">북아메리카 캐나다 밴쿠버</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83327.34089692409!2d-123.19394895!3d49.2577143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548673f143a94fb3%3A0xbb9196ea9b81f38b!2z67Cg7L-g67KMLCBC66eI7Yuw7Iuc7Lu464Ks67mE7JWEIOyjvCwg7LqQ64KY64uk!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="밴쿠버 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Gastown Detail Modal */}
-      {activeModal === "gastown" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">밴쿠버에서 가장 오래된 거리, 개스타운 (GASTOWN)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={gastownImages[carouselIndex]} alt={`개스타운 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {gastownImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>1867년 수다쟁이 선원 &apos;개시 잭&apos; 데이튼이 위스키 한 통으로 술집을 열면서 탄생한 밴쿠버의 발상지입니다.</p>
-                  <p>자갈이 깔린 거리 위로 빅토리아풍 붉은 벽돌 건물이 늘어서 있고, 15분마다 증기를 내뿜는 세계 유일의 증기시계(Steam Clock)가 이 거리의 상징입니다. 위스키 배럴 위에 올라선 개시 잭 동상도 놓치지 마세요.</p>
-                  <p>감각적인 부티크와 갤러리, 분위기 좋은 레스토랑이 즐비해 산책만으로도 충분히 매력적인 곳입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 동쪽, 워터프론트역 인근</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Gastown,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (야외 거리)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10410!2d-123.1058!3d49.2844!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486717f41ba3855%3A0xcfba5e6689bae30a!2sGastown!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="개스타운 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Canada Place Detail Modal */}
-      {activeModal === "canadaplace" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">밴쿠버 항구의 랜드마크, 캐나다 플레이스 (CANADA PLACE)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={canadaPlaceImages[carouselIndex]} alt={`캐나다 플레이스 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {canadaPlaceImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>1986년 세계박람회(EXPO 86)를 위해 건설된 캐나다관이 전신으로, 찰스 왕세자가 직접 개관했습니다. 박람회 기간 동안 500만 명 이상의 방문객을 맞이하며 큰 화제를 모았습니다.</p>
-                  <p>다섯 개의 흰색 돛 모양 지붕은 범선을 형상화한 것으로, 밴쿠버 해안 스카이라인의 상징입니다. 매일 정오가 되면 &apos;Heritage Horns&apos;라 불리는 10개의 호른이 캐나다 국가를 울려 퍼뜨립니다.</p>
-                  <p>현재는 알래스카 크루즈 출발 터미널, 밴쿠버 컨벤션센터, 팬퍼시픽 호텔, 그리고 시뮬레이션 비행 체험 &apos;FlyOver Canada&apos;가 있는 복합문화공간입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">999 Canada Place, Vancouver</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Canada+Place,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (부두 산책 기준)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d-123.1143764!3d49.2890081!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486719d24e2e021%3A0xb7057fe085c86109!2z7LqQ64KY64ukIO2UjOugiOydtOyKpA!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="캐나다 플레이스 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stanley Park Detail Modal */}
-      {activeModal === "stanleypark" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">도심 속 거대한 숲, 스탠리 공원 (STANLEY PARK)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={activeImages[carouselIndex]} alt={`스탠리 공원 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {activeImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>400헥타르의 부지에 50만 그루의 나무가 울창한 북미 최대의 도시 공원입니다. 수백 년 된 나무 중에는 높이 76미터에 달하는 거목도 있으며, 연간 800만 명이 찾는 밴쿠버의 자랑입니다.</p>
-                  <p>세계에서 가장 긴 끊기지 않는 해안 산책로 &apos;시월(Seawall)&apos;은 약 10km에 달하며, 걷는 데 약 3시간이 소요됩니다. 도시 스카이라인과 노스쇼어 산맥, 배라드 만의 풍경이 파노라마처럼 펼쳐집니다.</p>
-                  <p>공원 안에는 밴쿠버 수족관, 퍼스트 네이션 토템폴, 로스트 라군, 프로스펙트 포인트 전망대 등 다양한 볼거리가 있습니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 서쪽 반도</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Stanley+Park,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (공원 진입 기준)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">06:00 ~ 22:00</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10408.5!2d-123.1416!3d49.3043!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548671832a35e18b%3A0x1fbd40096f5d6c43!2sStanley%20Park!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="스탠리 공원 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Emerald Princess Detail Modal */}
-      {activeModal === "emeraldprincess" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">에메랄드 프린세스 (EMERALD PRINCESS)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={activeImages[carouselIndex]} alt={`에메랄드 프린세스 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {activeImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>프린세스 크루즈의 대표 선박, 에메랄드 프린세스.</p>
-                  <p>총 톤수 113,561톤, 전장 290m, 최대 3,114명의 승객을 수용하는 대형 크루즈 선박입니다. 2007년 취항한 이래 전 세계의 다양한 항로를 운항하고 있습니다.</p>
-                  <p>선내에는 다양한 레스토랑과 바, 카지노, 로터스 스파, 수영장 4개, 대극장 &apos;Princess Theatre&apos;, 미니 골프장, 조깅 트랙 등 풍부한 부대시설이 갖추어져 있어 항해 중에도 다채로운 즐거움을 누리실 수 있습니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선사</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">프린세스 크루즈 (Princess Cruises)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">취항</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">2007년</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">총 톤수</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">113,561톤</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">승객 정원</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">최대 3,114명</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">승무원</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">약 1,200명</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">전장</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">290m / 19층 (데크 기준)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Boarding Info Modal */}
-      {activeModal === "boarding" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">📢 에메랄드 프린세스호 승선 수속 안내</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="text-sm text-gray-700 leading-relaxed space-y-5">
-                <div>
-                  <p className="font-semibold text-gray-800">1. 수하물 위탁 (Luggage Drop-off)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>터미널 도착 후 큰 수하물을 위탁하시면 배정된 선실 앞으로 안전하게 배달됩니다.</li>
-                    <li>여권, 승선 서류, 귀중품 및 파손 주의 물품은 반드시 직접 소지하고 탑승해 주세요.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">2. 승선 수속 (Check-in &amp; Boarding)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>준비물: 여권, 크루즈 승선 서류, 해외 결제 가능한 신용카드</li>
-                    <li>위탁 수속 후 체크인 카운터에서 본인 확인 및 수속을 진행합니다.</li>
-                    <li>모든 탑승 수속은 크루즈 출발 시간 2시간 전까지 반드시 완료되어야 합니다.</li>
-                    <li>선실 내에는 신분증, 결제 수단, 객실 키 역할을 하는 &apos;승선 카드&apos;가 비치되어 있습니다. (분실 시 안내 데스크에서 재발급 가능)</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">3. 승선 후 유의사항 (After Boarding)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>필수 안전 교육(Safety Drill): 승선 후 안내에 따라 지정된 장소에서 위급 상황 대처 교육을 이수해야 합니다.</li>
-                    <li>기항지 선택 관광: 선사에서 운영하는 기항지 투어(영어 진행)는 조기 마감될 수 있으므로 승선 첫날 신청하시기를 권장합니다. (변경/취소 시 수수료 발생 가능)</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Disembarkation Info Modal */}
-      {activeModal === "disembarkation" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">📢 크루즈 하선 수속 안내</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="text-sm text-gray-700 leading-relaxed space-y-5">
-                <div>
-                  <p className="font-semibold text-gray-800">1. 선내 결제 비용 정산 (Settlement)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li><span className="font-semibold">내역 확인:</span> 하선 전날 저녁 또는 당일 아침, 선실로 상세 결제 내역서가 배달됩니다.</li>
-                    <li><span className="font-semibold">결제 방식:</span> 승선 시 등록한 신용카드로 자동 청구되므로, 내역에 이상이 없다면 별도의 하선 수속 없이 편안하게 대기하시면 됩니다. (현금 결제 희망 시 미화 달러 USD 사용 가능)</li>
-                    <li><span className="font-semibold">안내 데스크:</span> 정산서를 받지 못하셨거나 청구 내역에 문의가 있으신 경우, 승선 카드를 지참하여 고객 안내 데스크(Guest Relations)를 방문해 주세요.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">2. 하선 전 수하물 위탁 (Luggage Drop-off)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li><span className="font-semibold">수하물 내놓기:</span> 하선 전날 선실로 전달되는 &lsquo;전용 수하물 태그&rsquo;를 가방에 부착한 뒤, 선사가 지정한 시간까지 선실 문 밖에 내어주세요. 위탁하신 짐은 하선 후 크루즈 터미널에서 찾으실 수 있습니다.</li>
-                    <li className="text-red-500">⚠️ 주의 사항: 하선 당일 입을 옷, 여권, 승선 카드, 신용카드, 귀중품 및 상비약 등은 <span className="font-semibold">절대 위탁 수하물에 넣지 마시고 반드시 본인이 직접 소지(핸드캐리)</span>하여 하선해 주시기 바랍니다.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Juneau Detail Modal */}
-      {activeModal === "juneau" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">[관광정보] 주노 (JUNEAU)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={juneauModalImages[carouselIndex]} alt={`주노 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {juneauModalImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>알래스카의 주도, 주노.</p>
-                  <p>빙하와 산, 바다가 어우러진 주노는 도로로 접근할 수 없는 미국 유일의 주도입니다. 1880년 금광이 발견되면서 형성된 이 도시는 웅장한 자연경관 속에 자리 잡고 있습니다.</p>
-                  <p>멘덴홀 빙하(Mendenhall Glacier)는 주노에서 가장 인기 있는 관광지로, 약 19km 길이의 거대한 빙하를 가까이에서 감상할 수 있습니다. 혹등고래 관찰 투어, 연어가 거슬러 오르는 계곡, 그리고 독수리가 서식하는 원시림까지 알래스카의 대자연을 가장 가까이에서 체험할 수 있는 곳입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 주노 (Juneau, Alaska)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Juneau,Alaska,USA" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">약 32,000명</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">멘덴홀 빙하, 트레이시 암, 고래 관찰</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 13°C (서늘, 비 잦음)</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://maps.google.com/maps?q=58.3004933,-134.4201306&z=11&hl=ko&output=embed"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="주노 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Shore Excursion Info Modal */}
-      {activeModal === "shoreexcursion" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">⚓ 주노(Juneau) 추천 기항지 선택 관광</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="text-base text-gray-700 leading-relaxed space-y-5">
-                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
-                <div>
-                  <p className="font-semibold text-gray-800">1. 멘덴홀 빙하 &amp; 혹등고래 관찰 투어</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: JNU-630</li>
-                    <li>예상 소요 시간: 약 5시간 30분</li>
-                    <li>예상 비용: 성인 $269.95부터~</li>
-                    <li>핵심 포인트: 주노의 상징인 멘덴홀 빙하를 감상하고, 소형 선박에 탑승해 알래스카 야생 혹등고래를 찾아 나서는 베스트셀러 투어입니다.</li>
-                    <li className="text-gray-500">참고 사항: 바닷바람을 막아줄 따뜻한 겉옷 준비가 필수이며, 12세 미만 아동은 반드시 보호자와 동반해야 합니다.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">2. 마운트 로버츠 트램웨이 자유 투어</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: JNU-140</li>
-                    <li>예상 소요 시간: 약 1시간 30분</li>
-                    <li>예상 비용: 성인 $63.00부터~</li>
-                    <li>핵심 포인트: 케이블카(트램)를 타고 산에 올라 주노 시내와 바다의 탁 트인 파노라마 전경을 한눈에 담아보세요. 정상에 도착한 후에는 맑은 공기를 마시며 숲길을 따라 가벼운 자유 트레킹을 즐기실 수 있습니다.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">3. 멘덴홀 빙하 &amp; 알래스카 연어 바비큐 특식</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: JNU-120</li>
-                    <li>예상 소요 시간: 약 4시간 30분</li>
-                    <li>예상 비용: 성인 $179.95부터~</li>
-                    <li>핵심 포인트: 웅장한 멘덴홀 빙하 방문과 더불어, 아름다운 야외 숲속 레스토랑에서 갓 구워낸 자연산 알래스카 연어와 치킨 바비큐를 무제한으로 맛볼 수 있는 오감 만족 프로그램입니다.</li>
-                    <li className="text-gray-500">참고 사항: 식사 후 라이브 음악과 함께 주변 생태계를 산책하는 여유로운 시간이 주어집니다. 야외 활동을 위한 따뜻한 재킷을 준비해 주세요.</li>
-                  </ul>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
-                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
-                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
-                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Skagway Detail Modal */}
-      {activeModal === "skagway" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">[관광정보] 스캐그웨이 (SKAGWAY)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={skagwayModalImages[carouselIndex]} alt={`스캐그웨이 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {skagwayModalImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>골드러시의 관문, 스캐그웨이.</p>
-                  <p>1897년 클론다이크 골드러시 당시 수만 명의 금 채굴꾼들이 이 작은 항구 마을을 거쳐 유콘으로 향했습니다. 현재 인구 약 1,200명의 소도시이지만, 브로드웨이 거리에 늘어선 19세기 건물들은 국립역사지구로 보존되어 당시의 분위기를 생생하게 전해줍니다.</p>
-                  <p>화이트패스 & 유콘 루트 철도는 1898년에 건설된 협궤 철도로, 해발 873m의 화이트패스 정상까지 깎아지른 절벽과 폭포, 빙하 계곡을 지나는 세계적으로 유명한 관광 열차입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 스캐그웨이 (Skagway, Alaska)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Skagway,Alaska,USA" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">약 1,200명</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">화이트패스 철도, 브로드웨이 역사지구, 유콘 현수교</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 12°C (서늘, 비 잦음)</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://maps.google.com/maps?q=59.4583,-135.3145&z=14&hl=ko&output=embed"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="스캐그웨이 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Skagway Shore Excursion Info Modal */}
-      {activeModal === "shoreexcursion_skagway" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">⚓ 스캐그웨이(Skagway) 추천 기항지 선택 관광</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="text-base text-gray-700 leading-relaxed space-y-5">
-                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
-                <div>
-                  <p className="font-semibold text-gray-800">1. 화이트 패스 산악 경관 열차 투어 (White Pass Scenic Railway)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: SGY-200</li>
-                    <li>예상 소요 시간: 약 2시간 40분</li>
-                    <li>예상 비용: 성인 $159.95부터~</li>
-                    <li>핵심 포인트: 19세기 골드러시 시대의 향수를 간직한 클래식 산악 열차에 탑승해 스캐그웨이의 경이로운 대자연 속으로 들어갑니다. 해발 900m(약 3,000피트)가 넘는 험준한 산맥을 가로지르며 깎아지른 절벽과 압도적인 파노라마 절경을 감상하실 수 있습니다.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">2. 헬기 빙하 비행 &amp; 알래스칸 허스키 개썰매 캠프 (Dog Sledding &amp; Glacier Helicopter)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: SGY-840</li>
-                    <li>예상 소요 시간: 약 2시간</li>
-                    <li>예상 비용: 성인 $749.95부터~</li>
-                    <li>핵심 포인트: 헬리콥터를 타고 거대한 빙하 위를 비행하며 알래스카의 환상적인 풍광을 눈에 담는 럭셔리 투어입니다. 이후 약 300여 마리의 늠름한 알래스칸 허스키가 생활하는 눈 덮인 베이스캠프에 직접 착륙하여 잊지 못할 특별한 교감을 나눕니다.</li>
-                    <li className="text-gray-500">참고 사항: 탑승자 체중이 110kg(250lbs) 이상일 경우 안전 및 헬기 하중 규정상 추가 요금이 발생합니다. 13세 미만 아동은 반드시 성인 보호자와 동행해야 하며, 현지 기상 악화 시 안전을 위해 헬기 운항이 취소될 수 있습니다.</li>
-                  </ul>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
-                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
-                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
-                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Ketchikan Detail Modal */}
-      {activeModal === "ketchikan" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">[관광정보] 케치칸 (KETCHIKAN)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={ketchikanModalImages[carouselIndex]} alt={`케치칸 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {ketchikanModalImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>알래스카의 첫 번째 도시, 케치칸.</p>
-                  <p>알래스카 남동부 레빌라기게도 섬에 자리한 케치칸은 &lsquo;세계 연어의 수도(Salmon Capital of the World)&rsquo;로 불립니다. 매년 여름이면 수백만 마리의 연어가 크리크 거리 아래 개울을 거슬러 올라가는 장관을 눈앞에서 감상할 수 있습니다.</p>
-                  <p>세계 최대 규모의 온대 우림인 통가스 국립공원이 도시를 감싸고 있으며, 틀링깃(Tlingit) 원주민의 문화를 간직한 토템폴 유산센터와 색색의 수상 가옥이 늘어선 크리크 거리는 케치칸의 대표 명소입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">도시</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 케치칸 (Ketchikan, Alaska)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Ketchikan,Alaska,USA" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">인구</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">약 8,200명</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 관광지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">크리크 거리, 토템폴 유산센터, 통가스 국립공원</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 14°C (온화, 비 잦음)</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20000!2d-131.6461!3d55.342!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x540198773a045391%3A0x6ea09e3c5e3b6c0a!2sKetchikan%2C%20AK%2C%20USA!5e0!3m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="케치칸 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Ketchikan Shore Excursion Info Modal */}
-      {activeModal === "shoreexcursion_ketchikan" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">⚓ 케치칸(Ketchikan) 추천 기항지 선택 관광</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="text-base text-gray-700 leading-relaxed space-y-5">
-                <p>본 프로그램은 프린세스 크루즈 선사에서 직접 주관하며, 전 세계 승객들과 함께 <span className="font-semibold text-gray-800">영어 가이드</span>로 진행됩니다.</p>
-                <div>
-                  <p className="font-semibold text-gray-800">1. 자연 탐험 &amp; 던지니스 게 만찬 (Wilderness Exploration &amp; Crab Feast)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: KTN-650</li>
-                    <li>예상 소요 시간: 약 4시간</li>
-                    <li>예상 비용: 성인 $239.95부터~</li>
-                    <li>핵심 포인트: 세계 최대 규모의 온대 우림인 통가스 국립공원을 거닐며 알래스카의 다채로운 동식물과 대자연을 탐험합니다. 상쾌한 산책 후에는 조지 인렛 롯지로 이동해 푸짐한 던지니스 게 요리를 마음껏 즐기실 수 있습니다.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">2. 수륙양용 덕 투어 (Town &amp; Harbor by Duck)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: KTN-660</li>
-                    <li>예상 소요 시간: 약 1시간 30분</li>
-                    <li>예상 비용: 성인 $109.95부터~</li>
-                    <li>핵심 포인트: 미국 해안경비대의 인증을 받은 수륙양용차 &lsquo;덕(Duck)&rsquo;에 탑승해 육지와 바다를 넘나들며 케치칸을 둘러봅니다. 웨일 파크, 연어 길(Salmon ladder), 크리크 거리의 옛이야기를 만나고, 통조림 공장과 수상비행장 등 항구의 활기찬 풍경까지 한 번에 감상할 수 있습니다.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">3. 알래스카 럼버잭 쇼 &amp; 게 만찬 (Lumberjack Show &amp; Crab Feast)</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    <li>투어 코드: KTN-315</li>
-                    <li>예상 소요 시간: 약 4시간</li>
-                    <li>예상 비용: 성인 $144.95부터~</li>
-                    <li>핵심 포인트: 도끼 던지기, 톱질, 나무 타기 등 알래스카 전통 벌목꾼들의 박진감 넘치는 12가지 경연이 펼쳐지는 명물 &lsquo;럼버잭 쇼&rsquo;를 관람합니다. 흥미진진한 공연을 즐긴 뒤, 아름다운 전망의 롯지에서 풍성한 게 요리 만찬이 이어집니다.</li>
-                  </ul>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="font-semibold text-gray-800">💡 기항지 투어 예약 시 유의사항</p>
-                  <ul className="mt-2 ml-4 list-disc space-y-1.5">
-                    <li>안내된 투어 요금 및 세부 일정은 현지 기상 상황이나 선사 사정에 따라 사전 예고 없이 변동될 수 있습니다.</li>
-                    <li>인기 프로그램은 조기 마감될 수 있으므로, 출발 전 프린세스 크루즈 공식 홈페이지에 접속하여 개별 신용카드로 사전 예약하시는 것을 권장합니다.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Endicott Arm Detail Modal */}
-      {activeModal === "endicottarm" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">[관광정보] 엔디캇 암 (ENDICOTT ARM)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={endicottArmModalImages[carouselIndex]} alt={`엔디캇 암 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {endicottArmModalImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>알래스카의 숨겨진 보석, 엔디캇 암.</p>
-                  <p>엔디캇 암은 알래스카 남동부에 위치한 약 50km 길이의 장대한 피오르 수로입니다. 수로 끝에는 도스 빙하(Dawes Glacier)가 자리하고 있으며, 거대한 빙벽에서 떨어져 나온 유빙들이 푸른 바다 위를 떠다니는 장관을 연출합니다.</p>
-                  <p>크루즈 선박은 이 좁은 수로를 천천히 항해하며, 승객들은 데크에서 눈앞에 펼쳐지는 빙하와 야생동물(혹등고래, 물개, 대머리 독수리 등)을 가까이서 관찰할 수 있습니다.</p>
-                  <p className="text-red-500">※ 크루즈에서 하선하지 않고 배 위에서 관람하는 일정입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">알래스카 남동부 엔디캇 암 (Endicott Arm, Alaska)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Endicott+Arm,Alaska,USA" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 볼거리</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">도스 빙하, 피오르 절벽, 유빙, 야생동물</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">관람 방식</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">하선 없이 선상 관람 (Scenic Cruising)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">기후</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">8월 평균 10°C (바람이 강할 수 있음)</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d80000!2d-133.43!3d57.675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x540468f16ef846e5%3A0x3e66b7d739fa3d0!2sEndicott%20Arm!5e0!3m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="엔디캇 암 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Cruise At Sea Detail Modal */}
-      {activeModal === "cruiseatsea" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">🚢 에메랄드 프린세스 전일 해상</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={activeImages[carouselIndex]} alt={`크루즈 시설 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {activeImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>선내 자유시간: 수준 높은 무료 공연 관람 및 다채로운 부대시설 이용</p>
-                  <ul className="ml-4 list-disc space-y-1">
-                    <li>프리미엄 스파에서 여행의 피로를 부드럽게 풀어보세요.</li>
-                    <li>탁 트인 야외 수영장에서 일광욕을 즐기며 여유롭게 책을 읽어보세요.</li>
-                    <li>오션뷰 조깅 트랙을 달리거나 최신식 피트니스 센터에서 상쾌하게 땀을 흘려보세요.</li>
-                    <li>따뜻한 자쿠지에 몸을 담그고 와인 한 잔의 여유를 만끽해 보세요.</li>
-                    <li>요가, 댄스 강좌, 빙고 등 매일 다채롭게 열리는 선내 프로그램에 참여해 보세요.</li>
-                  </ul>
-                  <p>잔잔한 바다 한가운데서 누리는 이 모든 휴식이 크루즈 여행의 진정한 매력입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선박</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">에메랄드 프린세스 (Emerald Princess)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 시설</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">수영장, 스파, 카지노, 극장, 미니 골프, 조깅 트랙</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">식사</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">메인 다이닝룸, 뷔페, 피자 바, 아이스크림 바 등</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">드레스코드</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">캐주얼 (스마트 캐주얼 권장)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Cruise Interior Detail Modal */}
-      {activeModal === "cruiseinterior" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">🚢 에메랄드 프린세스 전일 해상</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={activeImages[carouselIndex]} alt={`크루즈 내부 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {activeImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>오늘은 종일 해상에서 보내는 날입니다. 에메랄드 프린세스의 다양한 시설을 마음껏 즐겨보세요.</p>
-                  <p>수영장 4개와 자쿠지, 로터스 스파에서 여유를 만끽하고, 대극장 &apos;Princess Theatre&apos;에서 브로드웨이 스타일의 공연을 관람하실 수 있습니다. 카지노에서 행운을 시험해보거나, 미니 골프와 조깅 트랙에서 상쾌한 시간을 보내보세요.</p>
-                  <p>메인 다이닝룸과 뷔페 레스토랑에서 세계 각국의 요리를 즐기시고, 야외 데크에서 광활한 태평양의 풍경을 감상하며 특별한 하루를 보내시기 바랍니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">선박</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">에메랄드 프린세스 (Emerald Princess)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주요 시설</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">수영장, 스파, 카지노, 극장, 미니 골프, 조깅 트랙</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">식사</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">메인 다이닝룸, 뷔페, 피자 바, 아이스크림 바 등</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">드레스코드</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">캐주얼 (스마트 캐주얼 권장)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Chinatown Detail Modal */}
-      {activeModal === "chinatown" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
-          <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-              <h3 className="text-base md:text-lg font-bold">북미에서 가장 오래된 차이나타운 (CHINATOWN)</h3>
-              <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
-                <X className="w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-            <div className="p-4 pb-28 md:p-6">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="relative w-full md:w-1/2 aspect-[4/3] bg-gray-200 overflow-hidden flex-shrink-0">
-                  <img src={chinatownImages[carouselIndex]} alt={`차이나타운 ${carouselIndex + 1}`} className="w-full h-full object-cover" />
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 transition-colors">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-3 py-1">
-                    {carouselIndex + 1} / {chinatownImages.length}
-                  </div>
-                </div>
-                <div className="flex-1 text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p>1880년대 브리티시 컬럼비아 골드러시와 대륙횡단철도 건설 시대에 형성된 캐나다 최대이자 북미에서 가장 오래된 차이나타운 중 하나입니다.</p>
-                  <p>내셔널 지오그래픽이 &apos;세계 최고의 도시 정원&apos;으로 선정한 쑨원 고전 중국정원(Dr. Sun Yat-Sen Classical Chinese Garden)이 대표적인 볼거리입니다. 중국 전통 양식과 서양 건축이 혼합된 독특한 건물들이 거리를 수놓고 있습니다.</p>
-                  <p>한약재 상점부터 실크 가게, 활기 넘치는 딤섬 레스토랑까지 다양한 볼거리와 먹거리가 가득한 이국적인 거리입니다.</p>
-                </div>
-              </div>
-              <table className="w-full mt-6 border-t border-gray-200 text-sm">
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 w-20 md:w-28 text-center">위치</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">밴쿠버 다운타운 동쪽, 펜더 스트리트 일대</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">주소</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">
-                      <a href="https://maps.google.com/?q=Chinatown,Vancouver,BC,Canada" target="_blank" rel="noopener noreferrer">
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-6 h-6 inline-block" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">홈페이지</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">연락처</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600"></td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">입장료</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">무료 (거리 관광 기준)</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-3 md:px-4 bg-gray-50 font-semibold text-gray-700 text-center">오픈시간</td>
-                    <td className="py-3 px-3 md:px-4 text-gray-600">상시 개방</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="mt-6 aspect-[4/3]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500!2d-123.1058197!3d49.2801149!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5486717a491aa187%3A0x4cd3d8c1acdbacba!2sChinatown!5e0!3m2!1sko!2skr!4v1700000000000!5m2!1sko!2skr"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade" title="차이나타운 지도"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <TimelineModals activeModal={activeModal} onClose={closeModal} />
     </div>
   );
 };
