@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { cruiseData } from "@/data/cruise-data";
 
 export default function Hero() {
+    const { cruiseLine, departureDate, duration, description, mobileDescription, videoSources, mobileVideoSrc } = cruiseData.hero;
+
     return (
         <div id="hero">
             {/* Mobile Hero */}
             <section className="md:hidden bg-gray-100 pt-14">
                 <div className="px-4 pt-12 text-center">
                     <h1 className="text-[24px] font-bold leading-tight tracking-tight text-gray-900">
-                        프린세스 크루즈 에메랄드호
+                        {cruiseLine}
                     </h1>
                     <p className="mt-2 text-base font-normal leading-relaxed text-gray-600">
-                        알래스카 크루즈 2026년 08월 03일 출발<br />주요 일정과 기항지 정보를 지금 바로 확인하세요
+                        {(mobileDescription || description).replace("{departureDate}", departureDate).split("\n").map((line, i, arr) => (
+                            <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+                        ))}
                     </p>
                 </div>
 
@@ -26,7 +31,7 @@ export default function Hero() {
                             playsInline
                             className="absolute inset-0 w-full h-full object-cover"
                         >
-                            <source src="/hero-video/hero-clip.mp4" type="video/mp4" />
+                            <source src={mobileVideoSrc || videoSources[videoSources.length - 1]?.src} type="video/mp4" />
                         </video>
                     </div>
                 </div>
@@ -44,24 +49,26 @@ export default function Hero() {
                         playsInline
                         className="absolute inset-0 w-full h-full object-cover"
                     >
-                        <source src="/hero-video/hero-clip-1080p.webm" type="video/webm" />
-                        <source src="/hero-video/hero-clip-1080p.mp4" type="video/mp4" />
+                        {videoSources.map((source) => (
+                            <source key={source.src} src={source.src} type={source.type} />
+                        ))}
                     </video>
                 </div>
 
                 <div className="relative z-20 w-full max-w-7xl mx-auto px-4 md:px-10 text-left">
                     <span className="text-2xl font-normal tracking-widest uppercase text-white"
                         style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
-                        2026년 08월 03일 출발
+                        {departureDate}
                     </span>
                     <h1 className="mt-8 text-5xl font-bold leading-tight tracking-tight text-white"
                         style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
-                        프린세스 크루즈 에메랄드호
+                        {cruiseLine}
                     </h1>
                     <p className="mt-8 text-2xl font-normal leading-relaxed text-white"
                         style={{ textShadow: "0 4px 16px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6)" }}>
-                        알래스카 크루즈 8박 10일의 상세 일정을 안내해 드립니다<br />
-                        일자별 주요 일정과 기항지 정보를 지금 바로 확인하세요
+                        {description.split("\n").map((line, i) => (
+                            <span key={i}>{line}{i < description.split("\n").length - 1 && <br />}</span>
+                        ))}
                     </p>
                     <div className="mt-8">
                         <Link

@@ -1,25 +1,6 @@
-const spots = [
-    {
-        name: "주노 (Juneau)",
-        description: "알래스카의 주도이자, 빙하를 가장 가까이에서 볼 수 있는 곳. 맨덴홀 빙하 트레킹과 고래 관찰 투어가 인기입니다.",
-        image: "https://images.unsplash.com/photo-1518182170546-07fb612d7c0f?q=80&w=2670&auto=format&fit=crop"
-    },
-    {
-        name: "스케그웨이 (Skagway)",
-        description: "골드러시 시대의 흔적이 그대로 남아있는 역사적인 마을. 화이트 패스 & 유콘 루트 철도 여행으로 대자연을 만끽하세요.",
-        image: "https://images.unsplash.com/photo-1548858226-c21146604245?q=80&w=2670&auto=format&fit=crop"
-    },
-    {
-        name: "엔디캇 암 (Endicott Arm)",
-        description: "피요르드의 절경을 감상하며 항해하는 코스. 거대한 빙벽과 유빙 사이를 지나는 신비로운 경험을 선사합니다.",
-        image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2670&auto=format&fit=crop"
-    },
-    {
-        name: "케치칸 (Ketchikan)",
-        description: "세계 연어의 수도. 원주민의 토템폴 문화와 크릭 스트리트의 수상 가옥들이 독특한 풍경을 자아냅니다.",
-        image: "https://images.unsplash.com/photo-1517066928509-58079cd3645e?q=80&w=2759&auto=format&fit=crop"
-    }
-];
+import { cruiseData } from "@/data/cruise-data";
+
+const { spots } = cruiseData.touristSpots;
 
 export default function TouristSpots() {
     return (

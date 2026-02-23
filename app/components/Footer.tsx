@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Facebook, Instagram, Youtube } from "lucide-react";
+import { cruiseData } from "@/data/cruise-data";
 
 export default function Footer() {
+    const { companyName, description, logoPath, copyright, phone, email, hours, address, quickLinks } = cruiseData.footer;
+
     return (
         <footer className="bg-gray-900 text-white py-12 md:py-16 border-t border-white/10">
             <div className="max-w-6xl mx-auto px-4 md:px-6">
@@ -9,37 +12,35 @@ export default function Footer() {
                     <div className="md:col-span-1">
                         {/* 모바일 */}
                         <Link href="/" className="md:hidden flex items-center gap-2 mb-6">
-                            <img src="/header/KakaoTalk_20260220_105453762_02 12.png" alt="한세계여행사 로고" className="h-7 w-auto" />
-                            <span className="font-bold text-xl tracking-tight">한세계여행사</span>
+                            {logoPath && <img src={logoPath} alt={`${companyName} 로고`} className="h-7 w-auto" />}
+                            <span className="font-bold text-xl tracking-tight">{companyName}</span>
                         </Link>
                         {/* 데스크탑 */}
                         <Link href="/" className="hidden md:flex items-center gap-2 mb-6">
-                            <img src="/header/KakaoTalk_20260220_105453762_02 12.png" alt="한세계여행사 로고" className="h-8 w-auto" />
-                            <span className="font-bold text-xl tracking-tight">한세계여행사</span>
+                            {logoPath && <img src={logoPath} alt={`${companyName} 로고`} className="h-8 w-auto" />}
+                            <span className="font-bold text-xl tracking-tight">{companyName}</span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            꿈꾸던 크루즈 여행, 에메랄드 프린세스와 함께하세요.
-                            최고의 서비스와 잊지 못할 추억을 약속드립니다.
+                            {description}
                         </p>
                     </div>
 
                     <div className="hidden md:block">
                         <h4 className="font-bold text-lg mb-6">바로가기</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li><Link href="#intro" className="hover:text-white transition-colors">크루즈 소개</Link></li>
-                            <li><Link href="#facilities" className="hover:text-white transition-colors">시설 안내</Link></li>
-                            <li><Link href="#schedule" className="hover:text-white transition-colors">운항 일정</Link></li>
-                            <li><Link href="#tourist-spots" className="hover:text-white transition-colors">기항지 관광</Link></li>
+                            {quickLinks.map((link) => (
+                                <li key={link.href}><Link href={link.href} className="hover:text-white transition-colors">{link.label}</Link></li>
+                            ))}
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-bold text-lg mb-6">고객 센터</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li>전화: 1588-0000</li>
-                            <li>이메일: contact@cruise.com</li>
-                            <li>운영시간: 평일 09:00 - 18:00</li>
-                            <li>주소: 서울특별시 중구 세종대로 123</li>
+                            <li>전화: {phone}</li>
+                            <li>이메일: {email}</li>
+                            <li>운영시간: {hours}</li>
+                            <li>주소: {address}</li>
                         </ul>
                     </div>
 
@@ -63,7 +64,7 @@ export default function Footer() {
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-gray-500 text-sm">
-                        © 2026 Emerald Princess Cruise. All rights reserved.
+                        {copyright || `© ${new Date().getFullYear()} ${companyName}. All rights reserved.`}
                     </p>
                     <div className="flex gap-6">
                         <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>

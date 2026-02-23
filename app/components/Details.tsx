@@ -7,8 +7,10 @@ declare global {
 }
 
 import { useEffect, useRef } from "react";
+import { cruiseData } from "@/data/cruise-data";
 
 export default function Details() {
+    const { specs, youtube } = cruiseData.details;
     const playerRef = useRef<YT.Player | null>(null);
 
     useEffect(() => {
@@ -16,7 +18,7 @@ export default function Details() {
             new window.YT.Player("details-yt-player", {
                 width: "100%",
                 height: "100%",
-                videoId: "5wMQNxrwxM0",
+                videoId: youtube.videoId,
                 playerVars: {
                     autoplay: 1,
                     mute: 1,
@@ -25,8 +27,8 @@ export default function Details() {
                     rel: 0,
                     modestbranding: 1,
                     playsinline: 1,
-                    start: 492,
-                    end: 516,
+                    start: youtube.startSeconds,
+                    end: youtube.endSeconds,
                     disablekb: 1,
                     fs: 0,
                     iv_load_policy: 3,
@@ -39,7 +41,7 @@ export default function Details() {
                     },
                     onStateChange: (event: YT.OnStateChangeEvent) => {
                         if (event.data === YT.PlayerState.ENDED) {
-                            playerRef.current?.seekTo(492, true);
+                            playerRef.current?.seekTo(youtube.startSeconds, true);
                             playerRef.current?.playVideo();
                         }
                     },
@@ -84,22 +86,16 @@ export default function Details() {
                                 크루즈 제원
                             </h2>
                             <div className="px-4 md:px-0 md:mt-10 divide-y divide-gray-300 shadow-none md:shadow-[0_-1px_0_0_#111827,0_1px_0_0_#111827] md:border-b-0 text-base md:text-lg">
-                                <div className="grid grid-cols-2 gap-x-8 py-3">
-                                    <div className="flex gap-2"><span className="text-gray-800">톤 수 :</span><span className="text-gray-800">113,561톤</span></div>
-                                    <div className="flex gap-2"><span className="text-gray-800">길이 :</span><span className="text-gray-800">289.86m</span></div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-8 py-3">
-                                    <div className="flex gap-2"><span className="text-gray-800">승무원 :</span><span className="text-gray-800">1,200명</span></div>
-                                    <div className="flex gap-2"><span className="text-gray-800">높이 :</span><span className="text-gray-800">59.44m</span></div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-8 py-3">
-                                    <div className="flex gap-2"><span className="text-gray-800">승객 정원 :</span><span className="text-gray-800">3,080명</span></div>
-                                    <div className="flex gap-2"><span className="text-gray-800">규모 :</span><span className="text-gray-800">19층</span></div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-8 py-3 border-b border-gray-300 md:border-b-0">
-                                    <div className="flex gap-2"><span className="text-gray-800">첫 항해 :</span><span className="text-gray-800">2007. 4. 11</span></div>
-                                    <div className="flex gap-2"><span className="text-gray-800">객실 수 :</span><span className="text-gray-800">1,539개</span></div>
-                                </div>
+                                {Array.from({ length: Math.ceil(specs.length / 2) }, (_, i) => (
+                                    <div key={i} className={`grid grid-cols-2 gap-x-8 py-3${i === Math.ceil(specs.length / 2) - 1 ? " border-b border-gray-300 md:border-b-0" : ""}`}>
+                                        {specs.slice(i * 2, i * 2 + 2).map((spec) => (
+                                            <div key={spec.label} className="flex gap-2">
+                                                <span className="text-gray-800">{spec.label} :</span>
+                                                <span className="text-gray-800">{spec.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 

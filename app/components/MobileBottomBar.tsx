@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Phone, ChevronUp, ChevronDown, X, Copy, MessageCircle } from "lucide-react";
+import { cruiseData } from "@/data/cruise-data";
+
+const { phoneNumber, kakaoUrl, businessHours } = cruiseData.mobileBottomBar;
+const ROOM_TABS = cruiseData.pricing.roomTabs.map((tab) => ({
+    key: tab.key,
+    label: tab.label,
+    price: Number(tab.prices.adult.replace(/,/g, "")),
+}));
 
 export default function MobileBottomBar() {
     const [expanded, setExpanded] = useState(false);
@@ -44,12 +52,6 @@ export default function MobileBottomBar() {
             el.removeEventListener("touchend", onTouchEnd);
         };
     }, [expanded]);
-
-    const ROOM_TABS = [
-        { key: "inside", label: "인사이드", price: 5790000 },
-        { key: "oceanview", label: "오션뷰", price: 5990000 },
-        { key: "balcony", label: "발코니", price: 6490000 },
-    ] as const;
 
     const currentRoom = ROOM_TABS.find((t) => t.key === activeRoom)!;
     const adultPrice = currentRoom.price;
@@ -273,7 +275,7 @@ export default function MobileBottomBar() {
             <div className="relative z-20">
                 <div className="flex items-stretch h-12 border border-[#003d75]">
                     <a
-                        href="tel:02-000-0000"
+                        href={`tel:${phoneNumber}`}
                         className="flex items-center justify-center w-12 bg-white border-r border-[#003d75]"
                     >
                         <Phone className="w-5 h-5 text-[#0054a0]" />
@@ -323,7 +325,7 @@ export default function MobileBottomBar() {
                                     {copied ? "복사 완료!" : "복사하기"}
                                 </button>
                                 <a
-                                    href="https://open.kakao.com/"
+                                    href={kakaoUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#FEE500] text-[#391B1B] font-medium text-base rounded-md hover:bg-[#F5DC00] transition-colors"

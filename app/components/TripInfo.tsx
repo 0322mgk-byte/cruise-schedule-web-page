@@ -1,26 +1,43 @@
+import { cruiseData } from "@/data/cruise-data";
+
 export default function TripInfo() {
+    const { subtitle, flights, routeCities, reservationStatus, reservationCount, escortInfo, meetingPlace } = cruiseData.tripInfo;
+    const { duration } = cruiseData.hero;
+
     const tripData = [
         {
             label: "여행 일정",
             value: (
                 <div>
                     <div className="px-5 py-2 md:py-4 border-b border-gray-300">
-                        <span className="font-normal leading-relaxed text-gray-600">08/03 (월) 17:35 출발 &nbsp;&nbsp;|&nbsp;&nbsp; 8박 10일 <br className="md:hidden" /><span className="hidden md:inline">&nbsp;&nbsp;&nbsp;&nbsp;</span>✈️ 캐나다 항공</span>
+                        <span className="font-normal leading-relaxed text-gray-600">{flights.outbound[0].departureDate} {flights.outbound[0].departureTime} 출발 &nbsp;&nbsp;|&nbsp;&nbsp; {duration} <br className="md:hidden" /><span className="hidden md:inline">&nbsp;&nbsp;&nbsp;&nbsp;</span>✈️ {flights.outbound[0].airline}</span>
                     </div>
                     <div className="px-5 py-2 md:py-4 space-y-1">
                         {/* 모바일 */}
                         <div className="md:hidden">
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국출발</span>08/03 (월) 17:45</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지도착</span>08/03 (월) 11:35</div>
-                            <div className="text-gray-500 text-sm mt-0.5 mb-3">→ 총 9시간 55분 소요</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지출발</span>08/11 (화) 00:00</div>
-                            <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국도착</span>08/12 (수) 00:00</div>
-                            <div className="text-gray-500 text-sm mt-0.5 mb-1">→ 총 11시간 35분 소요</div>
+                            {flights.outbound.map((leg, i) => (
+                                <div key={`out-${i}`}>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국출발</span>{leg.departureDate} {leg.departureTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지도착</span>{leg.arrivalDate} {leg.arrivalTime}</div>
+                                    <div className="text-gray-500 text-sm mt-0.5 mb-3">&rarr; {leg.duration}</div>
+                                </div>
+                            ))}
+                            {flights.inbound.map((leg, i) => (
+                                <div key={`in-${i}`}>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지출발</span>{leg.departureDate} {leg.departureTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국도착</span>{leg.arrivalDate} {leg.arrivalTime}</div>
+                                    <div className="text-gray-500 text-sm mt-0.5 mb-1">&rarr; {leg.duration}</div>
+                                </div>
+                            ))}
                         </div>
                         {/* 데스크탑 */}
                         <div className="hidden md:block space-y-1 font-normal leading-relaxed text-gray-600">
-                            <div>한국 출발 &nbsp;08/03 (월) 17:45 &nbsp;&nbsp;→ &nbsp;&nbsp;현지 도착 &nbsp;08/03 (월) 11:35 &nbsp;&nbsp;&nbsp;AS172 &nbsp;&nbsp;총 9시간 55분 소요</div>
-                            <div>현지 출발 &nbsp;08/11 (화) 00:00 &nbsp;&nbsp;→ &nbsp;&nbsp;한국 도착 &nbsp;08/12 (수) 00:00 &nbsp;&nbsp;&nbsp;AS172 &nbsp;&nbsp;총 11시간 35분 소요</div>
+                            {flights.outbound.map((leg, i) => (
+                                <div key={`out-${i}`}>한국 출발 &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;현지 도착 &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                            ))}
+                            {flights.inbound.map((leg, i) => (
+                                <div key={`in-${i}`}>현지 출발 &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;한국 도착 &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -30,7 +47,7 @@ export default function TripInfo() {
             label: "여행 지역",
             value: (
                 <div className="flex items-center flex-wrap gap-1">
-                    {["밴쿠버", "해상", "주노", "스캐그웨이", "엔디캇암", "캐치칸", "해상", "밴쿠버"].map((city, i, arr) => (
+                    {routeCities.map((city, i, arr) => (
                         <span key={i} className="flex items-center gap-1">
                             <span className="font-normal leading-relaxed text-gray-600">{city}</span>
                             {i < arr.length - 1 && <span className="text-gray-600 font-semibold mx-2">&gt;</span>}
@@ -43,13 +60,13 @@ export default function TripInfo() {
             label: "예약 현황",
             value: (
                 <div className="flex items-center gap-3">
-                    <span className="inline-block bg-red-500 text-white text-xs md:text-base font-bold px-4 py-1 rounded-full">출발확정</span>
-                    <span className="text-gray-800 font-semibold text-base md:text-base">예약 <span className="text-red-500 text-xl md:text-base font-bold">16</span>명</span>
+                    <span className="inline-block bg-red-500 text-white text-xs md:text-base font-bold px-4 py-1 rounded-full">{reservationStatus}</span>
+                    <span className="text-gray-800 font-semibold text-base md:text-base">예약 <span className="text-red-500 text-xl md:text-base font-bold">{reservationCount}</span>명</span>
                 </div>
             ),
         },
-        { label: "인솔자", value: <span className="font-normal leading-relaxed text-gray-600">인솔자 1명이 동행합니다.</span> },
-        { label: "미팅 장소", value: <span className="font-normal leading-relaxed text-gray-600">인천공항 제2터미널</span> },
+        { label: "인솔자", value: <span className="font-normal leading-relaxed text-gray-600">{escortInfo}</span> },
+        { label: "미팅 장소", value: <span className="font-normal leading-relaxed text-gray-600">{meetingPlace}</span> },
     ];
 
     return (
@@ -62,7 +79,7 @@ export default function TripInfo() {
                             여행 주요 일정
                         </h2>
                         <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
-                            밴쿠버에서 알래스카까지 8박 10일의 항해
+                            {subtitle || `${routeCities[0]}에서 ${routeCities[routeCities.length - 1]}까지 ${duration}의 항해`}
                         </p>
                     </div>
 

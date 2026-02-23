@@ -2,18 +2,13 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { cruiseData } from "@/data/cruise-data";
 
 export default function TripSummary() {
     const [cancelOpen, setCancelOpen] = useState(true);
     const [noticeOpen, setNoticeOpen] = useState(true);
 
-    const cancellationItems = [
-        "예약금 100만 원(환불 불가)",
-        "출발일로부터 89일~60일 전 취소 시 신청금(150만 원) 위약금 부과",
-        "출발일로부터 59일~30일 전 취소 시 총 여행 요금의 60% 위약금 부과",
-        "출발일로부터 29일~15일 전 취소 시 총 여행 요금의 75% 위약금 부과",
-        "출발일로부터 14일~출발 당일 취소 시 총 여행 요금의 100% 위약금 부과",
-    ];
+    const { cancellationItems, importantNotices } = cruiseData.tripSummary;
 
     return (
         <>
@@ -70,56 +65,21 @@ export default function TripSummary() {
                                 <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${noticeOpen ? "rotate-180" : ""}`} />
                             </button>
                             <ul className={`px-5 py-5 space-y-2 ${noticeOpen ? "block" : "hidden"}`}>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>크루즈 선사는 엄격한 취소료 규정을 적용하고 있으며, 이 점 필히 양지하여 주시기 바랍니다.</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>&apos;총 경비&apos;는 할인된 상품 가격이 아닌 정상 상품 가격을 의미합니다.</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>No Show에 대한 환불은 적용되지 않으며, 크루즈 서류 발행 이후 모든 예약 변경에 대해 비용이 부과됩니다.</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>연휴, 연말, 휴가 기간 등에는 특별 취소료 규정이 적용되며, 예약 요청 시 별도 고지합니다.</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>여행자의 중대한 질병이나 부상, 천재지변으로 인한 취소 시에도 크루즈 취소료 규정이 적용됩니다.</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>
-                                        취소 접수는 업무 시간 내 유선 접수만 가능합니다.
-                                        <span className="block mt-1 ml-1 space-y-1">
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>업무 시간: 월~금 09:30~16:30</span>
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>토/일 및 국가 공휴일 제외</span>
+                                {importantNotices.map((notice, i) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
+                                        <span className="text-gray-400 flex-shrink-0">▣</span>
+                                        <span>
+                                            {notice.text}
+                                            {notice.subItems && (
+                                                <span className="block mt-1 ml-1 space-y-1">
+                                                    {notice.subItems.map((sub, j) => (
+                                                        <span key={j} className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>{sub}</span>
+                                                    ))}
+                                                </span>
+                                            )}
                                         </span>
-                                    </span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>
-                                        고객님들의 편안한 기항지 관광을 위해 대부분 선사 프로그램이 아닌, 당사에서 직접 준비하여 여행 프로그램을 진행합니다.
-                                        <span className="block mt-1 ml-1 space-y-1">
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>간혹 천재지변, 풍랑, 날씨에 따라 선사가 입/출항을 못 하는 경우가 발생할 수 있습니다.</span>
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>이 경우 선사 권한으로 현장에서 일정이 변경될 수 있습니다.</span>
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>따라서 기항지 관광에 대한 환불 처리는 불가하오니, 이 점 양해 부탁드립니다.</span>
-                                        </span>
-                                    </span>
-                                </li>
-                                <li className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                                    <span className="text-gray-400 flex-shrink-0">▣</span>
-                                    <span>
-                                        항공사의 문제로 수하물 미도착 및 항공 연착으로 인해 항공편이 변경되는 경우가 있을 수 있습니다.
-                                        <span className="block mt-1 ml-1 space-y-1">
-                                            <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>이 경우 여행사의 문제가 아니고 항공사의 문제로 발행되기 때문에, 여행사 보상 처리가 아닌 항공사에 보상 처리를 요청하여 해결하셔야 합니다.</span>
-                                        </span>
-                                    </span>
-                                </li>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
@@ -151,56 +111,21 @@ export default function TripSummary() {
                                     중요 안내사항
                                 </div>
                                 <ul className="px-5 py-5 space-y-2 flex-1">
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>크루즈 선사는 엄격한 취소료 규정을 적용하고 있으며, 이 점 필히 양지하여 주시기 바랍니다.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>&apos;총 경비&apos;는 할인된 상품 가격이 아닌 정상 상품 가격을 의미합니다.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>No Show에 대한 환불은 적용되지 않으며, 크루즈 서류 발행 이후 모든 예약 변경에 대해 비용이 부과됩니다.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>연휴, 연말, 휴가 기간 등에는 특별 취소료 규정이 적용되며, 예약 요청 시 별도 고지합니다.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>여행자의 중대한 질병이나 부상, 천재지변으로 인한 취소 시에도 크루즈 취소료 규정이 적용됩니다.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>
-                                            취소 접수는 업무 시간 내 유선 접수만 가능합니다.
-                                            <span className="block mt-1 ml-1 space-y-1">
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>업무 시간: 월~금 09:30~16:30</span>
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>토/일 및 국가 공휴일 제외</span>
+                                    {importantNotices.map((notice, i) => (
+                                        <li key={i} className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
+                                            <span className="text-gray-400 flex-shrink-0">▣</span>
+                                            <span>
+                                                {notice.text}
+                                                {notice.subItems && (
+                                                    <span className="block mt-1 ml-1 space-y-1">
+                                                        {notice.subItems.map((sub, j) => (
+                                                            <span key={j} className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>{sub}</span>
+                                                        ))}
+                                                    </span>
+                                                )}
                                             </span>
-                                        </span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>
-                                            고객님들의 편안한 기항지 관광을 위해 대부분 선사 프로그램이 아닌, 당사에서 직접 준비하여 여행 프로그램을 진행합니다.
-                                            <span className="block mt-1 ml-1 space-y-1">
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>간혹 천재지변, 풍랑, 날씨에 따라 선사가 입/출항을 못 하는 경우가 발생할 수 있습니다.</span>
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>이 경우 선사 권한으로 현장에서 일정이 변경될 수 있습니다.</span>
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>따라서 기항지 관광에 대한 환불 처리는 불가하오니, 이 점 양해 부탁드립니다.</span>
-                                            </span>
-                                        </span>
-                                    </li>
-                                    <li className="flex items-start gap-2 text-base text-gray-600 leading-relaxed">
-                                        <span className="text-gray-400 flex-shrink-0">▣</span>
-                                        <span>
-                                            항공사의 문제로 수하물 미도착 및 항공 연착으로 인해 항공편이 변경되는 경우가 있을 수 있습니다.
-                                            <span className="block mt-1 ml-1 space-y-1">
-                                                <span className="flex items-start gap-2"><span className="text-gray-400 flex-shrink-0">•</span>이 경우 여행사의 문제가 아니고 항공사의 문제로 발행되기 때문에, 여행사 보상 처리가 아닌 항공사에 보상 처리를 요청하여 해결하셔야 합니다.</span>
-                                            </span>
-                                        </span>
-                                    </li>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
                         </div>

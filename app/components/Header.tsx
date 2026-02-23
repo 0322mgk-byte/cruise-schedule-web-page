@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { cruiseData } from "@/data/cruise-data";
 
-const navItems = [
-  { name: "시설 안내", href: "#intro" },
-  { name: "일정표", href: "#schedule" },
-  { name: "가격 안내", href: "#pricing" },
-  { name: "규정 안내", href: "#trip-summary" },
-  { name: "준비물", href: "#checklist" },
-];
+const { navItems, companyName, logoPath, logoDarkPath, mobileTitle } = cruiseData.header;
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -32,18 +27,20 @@ export default function Header() {
       <div className="relative h-full max-w-7xl mx-auto px-4 md:px-10 flex items-center">
         {/* 모바일: 상품상세정보 중앙 표시 */}
         <span className="md:hidden flex-1 text-center font-bold text-base text-white">
-          상품상세정보
+          {mobileTitle || "상품상세정보"}
         </span>
 
         {/* 데스크톱: 로고 + 한세계여행사 좌측 */}
         <div className="hidden md:flex flex-1 items-center">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative h-8 flex-shrink-0" style={{ aspectRatio: "448/370" }}>
-              <img src="/header/KakaoTalk_20260220_105453762_02 1 (Traced).svg" alt="한세계여행사 로고" className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`} />
-              <img src="/header/KakaoTalk_20260220_105453762_02 12.png" alt="한세계여행사 로고" className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`} />
-            </div>
+            {logoPath && (
+              <div className="relative h-8 flex-shrink-0" style={{ aspectRatio: "448/370" }}>
+                <img src={logoPath} alt={`${companyName} 로고`} className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`} />
+                <img src={logoDarkPath || logoPath} alt={`${companyName} 로고`} className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`} />
+              </div>
+            )}
             <span className={`font-bold text-2xl tracking-tight transition-colors ${scrolled ? "text-gray-900" : "text-white group-hover:text-gray-200"}`}>
-              한세계여행사
+              {companyName}
             </span>
           </Link>
         </div>

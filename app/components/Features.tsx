@@ -2,69 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Maximize2, BedDouble, Refrigerator, Tv, Bath, Waves, ConciergeBell, DoorClosed, Armchair, Wind, Lock, AppWindow } from "lucide-react";
+import { cruiseData } from "@/data/cruise-data";
 
-const features = [
-    {
-        name: "인사이드",
-        image: "/section3/section3-inside.jpg",
-        subtitle: "합리적인 가격의 인테리어룸",
-        description: "가장 저렴한 가격의 객실인 인테리어룸은 합리적인 여행을 즐기기에 완벽한 장소입니다.",
-        amenities: [
-            { icon: Maximize2, label: "객실 크기: 약 15m² (약 4.5평)", fullWidth: true },
-            { icon: BedDouble, label: "편안한 퀸 or 트윈 베드" },
-            { icon: Refrigerator, label: "냉장고" },
-            { icon: Tv, label: "평면 TV" },
-            { icon: Bath, label: "개인 전용 욕실" },
-            { icon: Waves, label: "면 100% 타월" },
-            { icon: ConciergeBell, label: "24시간 무료 룸서비스" },
-            { icon: DoorClosed, label: "옷장" },
-            { icon: Armchair, label: "책상" },
-            { icon: Wind, label: "헤어드라이어 및 욕실 용품" },
-            { icon: Lock, label: "디지털 보안 금고" },
-        ],
-    },
-    {
-        name: "오션뷰",
-        image: "/section3/section3-o.jpg",
-        subtitle: "푸른 바다를 품은 오션뷰 룸",
-        description: "그림 같은 풍경과 자연 채광이 가득한 오션뷰 룸은 광활한 바다의 아름다운 경치를 자랑합니다.",
-        amenities: [
-            { icon: Maximize2, label: "객실 크기: 약 13.5~19.1m² (약 4.1~5.8평)" },
-            { icon: AppWindow, label: "멋진 바다의 풍경을 볼 수 있는 큰 창문" },
-            { icon: BedDouble, label: "편안한 퀸 or 트윈 베드" },
-            { icon: Refrigerator, label: "냉장고" },
-            { icon: Tv, label: "평면 TV" },
-            { icon: Bath, label: "개인 전용 욕실" },
-            { icon: Waves, label: "면 100% 타월" },
-            { icon: ConciergeBell, label: "24시간 무료 룸서비스" },
-            { icon: DoorClosed, label: "옷장" },
-            { icon: Armchair, label: "책상" },
-            { icon: Wind, label: "헤어드라이어 및 욕실 용품" },
-            { icon: Lock, label: "디지털 보안 금고" },
-        ],
-    },
-    {
-        name: "발코니",
-        image: "/section3/section3-b.jpg",
-        subtitle: "아름다운 바다를 한 눈에 볼 수 있는 야외 공간",
-        description: "인상적인 바다 뷰를 자랑하는 이 객실은 바다가 한눈에 들어오는 발코니 공간을 제공합니다.",
-        amenities: [
-            { icon: Maximize2, label: "객실 크기: 약 19.9~20.6m² (약 6.0~6.2평)", fullWidth: true },
-            { icon: Armchair, label: "의자 2개, 테이블, 발받침대를 포함한 발코니" },
-            { icon: AppWindow, label: "바닥부터 천장까지 슬라이딩 도어" },
-            { icon: BedDouble, label: "편안한 퀸 or 트윈 베드" },
-            { icon: Refrigerator, label: "냉장고" },
-            { icon: Tv, label: "평면 TV 2개" },
-            { icon: Bath, label: "개인 전용 욕실" },
-            { icon: Waves, label: "면 100% 타월" },
-            { icon: ConciergeBell, label: "24시간 무료 룸서비스" },
-            { icon: DoorClosed, label: "옷장" },
-            { icon: Armchair, label: "책상" },
-            { icon: Wind, label: "헤어드라이어 및 욕실 용품" },
-            { icon: Lock, label: "디지털 보안 금고" },
-        ],
-    },
-];
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    Maximize2, BedDouble, Refrigerator, Tv, Bath, Waves, ConciergeBell, DoorClosed, Armchair, Wind, Lock, AppWindow,
+};
+
+const features = cruiseData.features.rooms;
 
 export default function Features() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -231,21 +175,21 @@ export default function Features() {
                                         return (
                                             <div className="border-t border-gray-200 mt-4">
                                                 {fullWidthItems.map((item, i) => {
-                                                    const Icon = item.icon;
+                                                    const Icon = iconMap[item.iconName];
                                                     return (
                                                         <div key={`fw-${i}`} className="flex items-center gap-3 px-4 py-3 border-b border-gray-200">
-                                                            <Icon className="w-5 h-5 text-[#0054a0] flex-shrink-0" />
+                                                            {Icon && <Icon className="w-5 h-5 text-[#0054a0] flex-shrink-0" />}
                                                             <span className="text-sm text-gray-700">{item.label}</span>
                                                         </div>
                                                     );
                                                 })}
                                                 {rows.map((row, ri) => {
-                                                    const LeftIcon = row.left.icon;
-                                                    const RightIcon = row.right?.icon;
+                                                    const LeftIcon = iconMap[row.left.iconName];
+                                                    const RightIcon = row.right ? iconMap[row.right.iconName] : undefined;
                                                     return (
                                                         <div key={ri} className="grid grid-cols-2 border-b border-gray-200">
                                                             <div className="flex items-center gap-3 px-4 py-3">
-                                                                <LeftIcon className="w-5 h-5 text-[#0054a0] flex-shrink-0" />
+                                                                {LeftIcon && <LeftIcon className="w-5 h-5 text-[#0054a0] flex-shrink-0" />}
                                                                 <span className="text-sm text-gray-700">{row.left.label}</span>
                                                             </div>
                                                             {row.right && RightIcon && (
