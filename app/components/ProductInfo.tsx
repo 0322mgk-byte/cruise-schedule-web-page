@@ -8,17 +8,17 @@ export default function ProductInfo() {
     const [includedOpen, setIncludedOpen] = useState(true);
     const [excludedOpen, setExcludedOpen] = useState(true);
 
-    const { includedItems, excludedItems } = cruiseData.productInfo;
+    const { labels, title, subtitle, includedItems, excludedItems } = cruiseData.productInfo;
 
     return (
         <section id="product-info" className="py-12 md:py-20 bg-gray-100">
             <div className="max-w-7xl mx-auto px-0 md:px-6">
                 <div className="text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                        상품 안내
+                        {title}
                     </h2>
                     <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
-                        포함 내역과 별도 지출 항목을 확인해 보세요
+                        {subtitle}
                     </p>
                 </div>
 
@@ -44,7 +44,7 @@ export default function ProductInfo() {
                                 <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <circle cx="12" cy="12" r="9" />
                                 </svg>
-                                포함사항
+                                {labels.includedTitle}
                             </span>
                         </div>
                         {/* 모바일: 아코디언 콘텐츠 */}
@@ -79,7 +79,7 @@ export default function ProductInfo() {
                                 <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                불포함사항
+                                {labels.excludedTitle}
                             </span>
                         </div>
                         {/* 모바일: 아코디언 콘텐츠 */}

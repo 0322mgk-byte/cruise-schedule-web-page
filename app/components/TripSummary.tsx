@@ -8,7 +8,7 @@ export default function TripSummary() {
     const [cancelOpen, setCancelOpen] = useState(true);
     const [noticeOpen, setNoticeOpen] = useState(true);
 
-    const { cancellationItems, importantNotices } = cruiseData.tripSummary;
+    const { labels, cancellationItems, importantNotices } = cruiseData.tripSummary;
 
     return (
         <>
@@ -36,7 +36,7 @@ export default function TripSummary() {
                                     <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                                     </svg>
-                                    취소 위약금 규정
+                                    {labels.cancellationTitle}
                                 </span>
                                 <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${cancelOpen ? "rotate-180" : ""}`} />
                             </button>
@@ -60,7 +60,7 @@ export default function TripSummary() {
                                     <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                                     </svg>
-                                    중요 안내사항
+                                    {labels.noticeTitle}
                                 </span>
                                 <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${noticeOpen ? "rotate-180" : ""}`} />
                             </button>
@@ -92,7 +92,7 @@ export default function TripSummary() {
                                     <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                                     </svg>
-                                    취소 위약금 규정
+                                    {labels.cancellationTitle}
                                 </div>
                                 <ul className="px-5 py-5 space-y-2 flex-1">
                                     {cancellationItems.map((item, i) => (
@@ -108,7 +108,7 @@ export default function TripSummary() {
                                     <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                                     </svg>
-                                    중요 안내사항
+                                    {labels.noticeTitle}
                                 </div>
                                 <ul className="px-5 py-5 space-y-2 flex-1">
                                     {importantNotices.map((notice, i) => (

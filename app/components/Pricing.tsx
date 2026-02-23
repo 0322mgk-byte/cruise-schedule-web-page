@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { X, ExternalLink } from "lucide-react";
 import { cruiseData } from "@/data/cruise-data";
 
-const { roomTabs: ROOM_TABS, personOptions: PERSON_OPTIONS, fuelSurchargeText, notices, infoSections } = cruiseData.pricing;
+const { labels, roomTabs: ROOM_TABS, personOptions: PERSON_OPTIONS, fuelSurchargeText, notices, infoSections } = cruiseData.pricing;
 
 function parsePrice(s: string) {
     return Number(s.replace(/,/g, ""));
@@ -66,11 +66,10 @@ export default function Pricing() {
                                 <button
                                     key={tab.key}
                                     onClick={() => setActiveTab(tab.key)}
-                                    className={`px-4 py-2 text-sm font-semibold transition-colors border ${
-                                        activeTab === tab.key
-                                            ? "bg-[#0054a0] text-white border-transparent"
-                                            : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
-                                    }`}
+                                    className={`px-4 py-2 text-sm font-semibold transition-colors border ${activeTab === tab.key
+                                        ? "bg-[#0054a0] text-white border-transparent"
+                                        : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
+                                        }`}
                                 >
                                     {tab.label}
                                 </button>
@@ -86,16 +85,16 @@ export default function Pricing() {
                                 <thead>
                                     <tr className="border-b border-gray-300">
                                         <th className="bg-gray-50 px-2 py-3 text-center font-semibold text-gray-700 border-r border-gray-300 w-1/3">
-                                            <div>성인</div>
-                                            <div className="text-sm font-normal text-gray-500 mt-0.5">만 12세 이상</div>
+                                            <div>{labels.adult}</div>
+                                            <div className="text-sm font-normal text-gray-500 mt-0.5">{labels.adultAge}</div>
                                         </th>
                                         <th className="bg-gray-50 px-2 py-3 text-center font-semibold text-gray-700 border-r border-gray-300 w-1/3">
-                                            <div>아동</div>
-                                            <div className="text-sm font-normal text-gray-500 mt-0.5">만 12세 미만</div>
+                                            <div>{labels.child}</div>
+                                            <div className="text-sm font-normal text-gray-500 mt-0.5">{labels.childAge}</div>
                                         </th>
                                         <th className="bg-gray-50 px-2 py-3 text-center font-semibold text-gray-700 w-1/3">
-                                            <div>유아</div>
-                                            <div className="text-sm font-normal text-gray-500 mt-0.5">만 2세 미만</div>
+                                            <div>{labels.infant}</div>
+                                            <div className="text-sm font-normal text-gray-500 mt-0.5">{labels.infantAge}</div>
                                         </th>
                                     </tr>
                                 </thead>
@@ -182,16 +181,15 @@ export default function Pricing() {
                                     <div className="flex-1 min-w-0 p-4">
                                         {/* 칩 셀렉터 */}
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-sm font-semibold text-gray-700 mr-1">객실 선택</span>
+                                            <span className="text-sm font-semibold text-gray-700 mr-1">{labels.roomSelect}</span>
                                             {ROOM_TABS.map((tab) => (
                                                 <button
                                                     key={tab.key}
                                                     onClick={() => setActiveTab(tab.key)}
-                                                    className={`px-5 py-2 text-sm font-semibold transition-colors border ${
-                                                        activeTab === tab.key
-                                                            ? "bg-[#0054a0] text-white border-transparent"
-                                                            : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
-                                                    }`}
+                                                    className={`px-5 py-2 text-sm font-semibold transition-colors border ${activeTab === tab.key
+                                                        ? "bg-[#0054a0] text-white border-transparent"
+                                                        : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
+                                                        }`}
                                                 >
                                                     {tab.label}
                                                 </button>
@@ -246,7 +244,7 @@ export default function Pricing() {
                                     <div className="w-[26rem] shrink-0 border-l border-gray-300 flex flex-col">
                                         <div className="flex-1 flex flex-col items-end justify-center px-12 py-6">
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-lg text-gray-700">총 합계금액</span>
+                                                <span className="text-lg text-gray-700">{labels.totalPrice}</span>
                                                 <span className="text-4xl font-bold text-[#0054a0]">
                                                     {formatPrice(grandTotal)}
                                                     <span className="text-xl ml-0.5 text-gray-700 font-normal">원</span>

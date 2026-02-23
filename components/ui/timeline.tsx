@@ -14,6 +14,8 @@ import type {
   InfoModal,
 } from "@/data/types";
 
+const { labels } = cruiseData.schedule;
+
 const LocationPin = () => (
   <div className="relative flex items-center justify-center">
     {/* Outer pulse ring */}
@@ -121,7 +123,7 @@ const TimelineItemRenderer = ({
                   onClick={() => openModal(item.modalId)}
                   className="text-sm text-blue-500 hover:text-blue-600 hover:underline flex-shrink-0"
                 >
-                  상세보기
+                  {labels.viewDetails}
                 </button>
               </div>
               <div className="grid grid-cols-3 gap-2 px-5 pt-5">
@@ -149,7 +151,7 @@ const TimelineItemRenderer = ({
                 <img src={item.images[0]} alt={item.shortTitle} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
-                <span className="text-xs text-gray-500">{item.mobileLabel || "[관광정보]"}</span>
+                <span className="text-xs text-gray-500">{item.mobileLabel || labels.defaultTouristLocation}</span>
                 <p className="text-base font-bold text-gray-900 mt-0.5">{item.mobileSublabel || item.shortTitle}</p>
               </div>
               <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
@@ -228,8 +230,8 @@ const TimelineItemRenderer = ({
                 <span className="text-2xl">{"\u2693"}</span>
               </div>
               <div className="flex-1">
-                <span className="text-xs text-gray-500">{item.mobileLabel || "[기항지 투어]"}</span>
-                <p className="text-base font-bold text-gray-900 mt-0.5">{item.mobileSublabel || "추천 선택 관광"}</p>
+                <span className="text-xs text-gray-500">{item.mobileLabel || labels.defaultTourLabel}</span>
+                <p className="text-base font-bold text-gray-900 mt-0.5">{item.mobileSublabel || labels.defaultTourSublabel}</p>
               </div>
               <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
             </button>
@@ -338,8 +340,8 @@ const TimelineItemRenderer = ({
                 <img src={item.images[0]} alt="크루즈 시설" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
-                <span className="text-xs text-gray-500">{item.mobileLabel || "\uD83D\uDEA2 전일 해상"}</span>
-                <p className="text-base font-bold text-gray-900 mt-0.5">{item.mobileSublabel || "에메랄드 크루즈"}</p>
+                <span className="text-xs text-gray-500">{item.mobileLabel || labels.defaultSeaLabel}</span>
+                <p className="text-base font-bold text-gray-900 mt-0.5">{item.mobileSublabel || labels.defaultSeaSublabel}</p>
               </div>
               <ChevronRight className="w-6 h-6 text-gray-400 mr-4 flex-shrink-0" />
             </button>
@@ -464,7 +466,7 @@ const ModalRenderer = ({
         stopAutoSlide();
       };
     }
-    return () => {};
+    return () => { };
   }, [activeModal, activeImages.length, startAutoSlide, stopAutoSlide]);
 
   const prevImage = () =>
@@ -919,7 +921,7 @@ export const Timeline = () => {
     <div className="w-full bg-white">
       <div className="max-w-7xl mx-auto py-12 md:py-20 px-0 md:px-6 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-          상세 일정
+          {labels.title}
         </h2>
         <p
           ref={mobileBtnAnchorRef}
@@ -943,11 +945,10 @@ export const Timeline = () => {
             }}
             className="absolute -top-8 right-0 hidden md:flex text-sm md:text-base text-gray-500 hover:text-gray-700 transition-colors cursor-pointer items-center gap-1"
           >
-            {days.every((d) => openDays.has(d.day)) ? "모두 접기" : "모두 펼침"}
+            {days.every((d) => openDays.has(d.day)) ? labels.collapseAll : labels.expandAll}
             <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-300 ${
-                days.every((d) => openDays.has(d.day)) ? "rotate-180" : ""
-              }`}
+              className={`w-3.5 h-3.5 transition-transform duration-300 ${days.every((d) => openDays.has(d.day)) ? "rotate-180" : ""
+                }`}
             />
           </button>
           {/* Mobile toggle all button */}
@@ -966,11 +967,10 @@ export const Timeline = () => {
               onClick={toggleAllMobile}
               className="bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 cursor-pointer flex items-center gap-1"
             >
-              {isAllDaysOpen ? "모두접기" : "모두펼침"}
+              {isAllDaysOpen ? labels.collapseAll : labels.expandAll}
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${
-                  isAllDaysOpen ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 transition-transform duration-300 ${isAllDaysOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
           </div>
@@ -987,7 +987,7 @@ export const Timeline = () => {
                 >
                   {/* Left Side - Day & Date */}
                   <div className="bg-gray-600 text-white px-4 md:px-6 py-3 md:py-4 flex flex-col items-center md:items-start min-w-[80px] md:min-w-[160px] justify-center">
-                    <span className="text-base md:text-lg font-medium">{item.day}일차</span>
+                    <span className="text-base md:text-lg font-medium">{item.day}{labels.dayLabel}</span>
                     <span className="hidden md:block text-base mt-1 opacity-90">{item.date}</span>
                   </div>
 
@@ -1003,9 +1003,8 @@ export const Timeline = () => {
                       <p className="text-base text-gray-600">{item.description}</p>
                     </div>
                     <ChevronDown
-                      className={`w-5 h-5 text-gray-600 transition-transform ml-4 flex-shrink-0 ${
-                        openDays.has(item.day) ? "rotate-180" : ""
-                      }`}
+                      className={`w-5 h-5 text-gray-600 transition-transform ml-4 flex-shrink-0 ${openDays.has(item.day) ? "rotate-180" : ""
+                        }`}
                     />
                   </div>
                 </button>

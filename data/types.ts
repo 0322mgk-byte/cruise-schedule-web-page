@@ -191,6 +191,7 @@ export interface DayScheduleData {
 // ─── Section Data Types ───
 
 export interface HeroData {
+  ctaText: string;
   cruiseLine: string;
   departureDate: string;
   duration: string;
@@ -213,7 +214,20 @@ export interface FlightLeg {
 }
 
 export interface TripInfoData {
+  title: string;
   subtitle?: string;
+  labels: {
+    schedule: string;
+    departKorea: string;
+    arriveLocal: string;
+    departLocal: string;
+    arriveKorea: string;
+    routeRegion: string;
+    reservationStatus: string;
+    reservationCountUnit: string;
+    escort: string;
+    meetingPlace: string;
+  };
   flights: {
     outbound: FlightLeg[];
     inbound: FlightLeg[];
@@ -234,6 +248,9 @@ export interface FacilityData {
 }
 
 export interface IntroData {
+  title: string;
+  description: string;
+  moreText: string;
   facilities: FacilityData[];
 }
 
@@ -252,6 +269,9 @@ export interface RoomFeature {
 }
 
 export interface FeaturesData {
+  title: string;
+  description: string;
+  moreText: string;
   rooms: RoomFeature[];
 }
 
@@ -261,6 +281,7 @@ export interface ShipSpec {
 }
 
 export interface DetailsData {
+  title: string;
   specs: ShipSpec[];
   youtube: {
     videoId: string;
@@ -269,17 +290,30 @@ export interface DetailsData {
   };
 }
 
-export interface SpotData {
-  name: string;
-  description: string;
-  image: string;
-}
 
-export interface TouristSpotsData {
-  spots: SpotData[];
+export interface ScheduleLabels {
+  title: string;
+  expandAll: string;
+  collapseAll: string;
+  dayLabel: string;
+  viewDetails: string;
+  tourGuidePrefix: string;
+  defaultTouristLocation: string;
+  defaultTourLabel: string;
+  defaultTourSublabel: string;
+  defaultSeaLabel: string;
+  defaultSeaSublabel: string;
+  tourNoticeTitle: string;
+  tourCode: string;
+  expectedDuration: string;
+  expectedCost: string;
+  highlight: string;
+  note: string;
+  mapTitleSuffix: string;
 }
 
 export interface ScheduleData {
+  labels: ScheduleLabels;
   days: DayScheduleData[];
   modals: ModalData[];
   dateRange: string;
@@ -297,7 +331,21 @@ export interface PricingInfoSection {
   items: string[];
 }
 
+export interface PricingLabels {
+  title: string;
+  roomSelect: string;
+  adult: string;
+  adultAge: string;
+  child: string;
+  childAge: string;
+  infant: string;
+  infantAge: string;
+  totalPrice: string;
+  surchargeNotice: string;
+}
+
 export interface PricingData {
+  labels: PricingLabels;
   roomTabs: RoomTabPrice[];
   personOptions: number[];
   fuelSurcharge: number;
@@ -308,7 +356,15 @@ export interface PricingData {
   infoSections: PricingInfoSection[];
 }
 
+export interface ProductInfoLabels {
+  includedTitle: string;
+  excludedTitle: string;
+}
+
 export interface ProductInfoData {
+  labels: ProductInfoLabels;
+  title: string;
+  subtitle: string;
   includedItems: string[];
   excludedItems: string[];
 }
@@ -318,7 +374,15 @@ export interface NoticeItem {
   subItems?: string[];
 }
 
+export interface TripSummaryLabels {
+  title: string;
+  subtitle: string;
+  cancellationTitle: string;
+  noticeTitle: string;
+}
+
 export interface TripSummaryData {
+  labels: TripSummaryLabels;
   cancellationItems: string[];
   importantNotices: NoticeItem[];
 }
@@ -328,7 +392,13 @@ export interface ChecklistCategory {
   items: string[];
 }
 
+export interface ChecklistLabels {
+  title: string;
+  subtitle: string;
+}
+
 export interface ChecklistData {
+  labels: ChecklistLabels;
   categories: ChecklistCategory[];
 }
 
@@ -358,9 +428,19 @@ export interface FooterData {
 }
 
 export interface MobileBottomBarData {
+  kakaoTemplate: (adults: number, children: number, infants: number, totalPrice: string) => string;
   phoneNumber: string;
   kakaoUrl: string;
   businessHours: string;
+  calculatorText: string;
+  inquiryText: string;
+  inquiryModalTitle: string;
+  copyButtonText: string;
+  copyCompleteText: string;
+  kakaoButtonText: string;
+  guideText: string;
+  processTitle: string;
+  processFlow: string;
 }
 
 // ─── Root Data Type ───
@@ -371,7 +451,6 @@ export interface CruisePackageData {
   intro: IntroData;
   features: FeaturesData;
   details: DetailsData;
-  touristSpots: TouristSpotsData;
   schedule: ScheduleData;
   pricing: PricingData;
   productInfo: ProductInfoData;

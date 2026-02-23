@@ -4,7 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { Phone, ChevronUp, ChevronDown, X, Copy, MessageCircle } from "lucide-react";
 import { cruiseData } from "@/data/cruise-data";
 
-const { phoneNumber, kakaoUrl, businessHours } = cruiseData.mobileBottomBar;
+const {
+    phoneNumber, kakaoUrl, businessHours,
+    calculatorText, inquiryText, inquiryModalTitle,
+    copyButtonText, copyCompleteText, kakaoButtonText,
+    guideText, processTitle, processFlow, kakaoTemplate
+} = cruiseData.mobileBottomBar;
 const ROOM_TABS = cruiseData.pricing.roomTabs.map((tab) => ({
     key: tab.key,
     label: tab.label,
@@ -64,11 +69,7 @@ export default function MobileBottomBar() {
         price.toLocaleString("ko-KR") + "원";
 
     const getInquiryText = () => {
-        const parts: string[] = [];
-        if (adults > 0) parts.push(`성인 ${adults}명`);
-        if (children > 0) parts.push(`소아 ${children}명`);
-        if (infants > 0) parts.push(`유아 ${infants}명`);
-        return `${parts.join(", ")}, 총 예상 비용 ${formatPrice(totalPrice)} 견적 문의합니다.`;
+        return kakaoTemplate(adults, children, infants, formatPrice(totalPrice));
     };
 
     const openInquiry = () => {
@@ -171,8 +172,8 @@ export default function MobileBottomBar() {
                                         key={tab.key}
                                         onClick={() => setActiveRoom(tab.key)}
                                         className={`px-3.5 py-1.5 w-20 flex-shrink-0 text-sm font-semibold transition-colors border ${activeRoom === tab.key
-                                                ? "bg-[#0054a0] text-white border-transparent"
-                                                : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
+                                            ? "bg-[#0054a0] text-white border-transparent"
+                                            : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
                                             }`}
                                     >
                                         {tab.label}
@@ -284,13 +285,13 @@ export default function MobileBottomBar() {
                         onClick={() => setExpanded(!expanded)}
                         className="flex-1 flex items-center justify-center bg-white text-[#0054a0] font-bold text-sm border-r border-[#003d75]"
                     >
-                        요금 계산기
+                        {calculatorText}
                     </button>
                     <button
                         onClick={openInquiry}
                         className="flex-1 flex items-center justify-center bg-[#0054a0] text-white font-bold text-sm"
                     >
-                        문의하기
+                        {inquiryText}
                     </button>
                 </div>
             </div>
@@ -302,7 +303,7 @@ export default function MobileBottomBar() {
                     <div className="relative z-10 bg-white w-full max-h-[80vh] overflow-y-auto">
                         {/* 헤더 */}
                         <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 py-2.5">
-                            <h3 className="text-sm font-bold">문의하기</h3>
+                            <h3 className="text-sm font-bold">{inquiryModalTitle}</h3>
                             <button onClick={closeInquiry} className="hover:bg-[#004080] p-1 transition-colors">
                                 <X className="w-4 h-4" />
                             </button>
@@ -322,7 +323,7 @@ export default function MobileBottomBar() {
                                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-300 bg-white text-gray-700 font-medium text-base rounded-md hover:bg-gray-50 transition-colors"
                                 >
                                     <Copy className="w-3.5 h-3.5" />
-                                    {copied ? "복사 완료!" : "복사하기"}
+                                    {copied ? copyCompleteText : copyButtonText}
                                 </button>
                                 <a
                                     href={kakaoUrl}
@@ -331,7 +332,7 @@ export default function MobileBottomBar() {
                                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#FEE500] text-[#391B1B] font-medium text-base rounded-md hover:bg-[#F5DC00] transition-colors"
                                 >
                                     <img src="/bottom_bar/image 3.svg" alt="카카오톡" className="w-5 h-5" />
-                                    카톡 문의
+                                    {kakaoButtonText}
                                 </a>
                             </div>
 
@@ -340,7 +341,7 @@ export default function MobileBottomBar() {
 
                             {/* 안내 문구 */}
                             <p className="text-sm text-gray-600 leading-relaxed">
-                                일정표 잘 보셨나요? 더 궁금하신 점이나 인원별 상세 견적은 지금 보고 계신 카톡으로 편하게 말씀해 주세요!
+                                {guideText}
                             </p>
 
                             {/* 구분선 */}
@@ -348,8 +349,8 @@ export default function MobileBottomBar() {
 
                             {/* 예약 프로세스 */}
                             <div>
-                                <p className="text-sm font-bold text-gray-900 mb-1">[예약 프로세스 요약]</p>
-                                <p className="text-sm text-gray-600">금액 확인 ➔ 카톡 문의 ➔ 맞춤 상담 ➔ 예약 확정</p>
+                                <p className="text-sm font-bold text-gray-900 mb-1">{processTitle}</p>
+                                <p className="text-sm text-gray-600">{processFlow}</p>
                             </div>
                         </div>
                     </div>

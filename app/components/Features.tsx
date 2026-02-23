@@ -8,7 +8,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Maximize2, BedDouble, Refrigerator, Tv, Bath, Waves, ConciergeBell, DoorClosed, Armchair, Wind, Lock, AppWindow,
 };
 
-const features = cruiseData.features.rooms;
+const { title, description, moreText, rooms: features } = cruiseData.features;
 
 export default function Features() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -59,45 +59,45 @@ export default function Features() {
             <section id="facilities" className="py-12 md:py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-0 md:px-6 text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                        숙박 시설 안내
+                        {title}
                     </h2>
                     <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
-                        바다 위의 호텔, 객실별 상세 시설 확인하기
+                        {description}
                     </p>
 
                     {/* Mobile: horizontal scroll */}
                     <div className="mt-6 md:hidden overflow-hidden">
-                    <div
-                        ref={scrollRef}
-                        onScroll={handleScroll}
-                        className="flex gap-5 overflow-x-auto snap-x snap-mandatory pl-5 scroll-pl-5 -mb-5 pb-5"
-                    >
-                        {features.map((feature, index) => (
-                            <div
-                                key={index}
-                                className={`flex-shrink-0 w-[80vw] bg-white shadow-md border border-gray-300 overflow-hidden cursor-pointer snap-start snap-always ${index === features.length - 1 ? "mr-5" : ""}`}
-                                onClick={() => openModal(index)}
-                            >
-                                <div className="aspect-[3/2] overflow-hidden">
-                                    <img
-                                        src={feature.image}
-                                        alt={feature.name}
-                                        className="w-full h-full object-cover"
-                                    />
+                        <div
+                            ref={scrollRef}
+                            onScroll={handleScroll}
+                            className="flex gap-5 overflow-x-auto snap-x snap-mandatory pl-5 scroll-pl-5 -mb-5 pb-5"
+                        >
+                            {features.map((feature, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex-shrink-0 w-[80vw] bg-white shadow-md border border-gray-300 overflow-hidden cursor-pointer snap-start snap-always ${index === features.length - 1 ? "mr-5" : ""}`}
+                                    onClick={() => openModal(index)}
+                                >
+                                    <div className="aspect-[3/2] overflow-hidden">
+                                        <img
+                                            src={feature.image}
+                                            alt={feature.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="px-4 pt-4 pb-3 text-left">
+                                        <h3 className="text-[17px] font-semibold text-gray-900">{feature.name}</h3>
+                                        {feature.subtitle && (
+                                            <p className="text-sm text-gray-500 mt-1">{feature.subtitle}</p>
+                                        )}
+                                        <span className="text-sm text-gray-900 font-medium mt-2 inline-flex items-center gap-1 transition-all duration-300 animate-heartbeat">
+                                            <span className="group-hover:underline underline-offset-4">{moreText}</span>
+                                            <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="px-4 pt-4 pb-3 text-left">
-                                    <h3 className="text-[17px] font-semibold text-gray-900">{feature.name}</h3>
-                                    {feature.subtitle && (
-                                        <p className="text-sm text-gray-500 mt-1">{feature.subtitle}</p>
-                                    )}
-                                    <span className="text-sm text-gray-900 font-medium mt-2 inline-flex items-center gap-1 transition-all duration-300 animate-heartbeat">
-                                        <span className="group-hover:underline underline-offset-4">자세히 보기</span>
-                                        <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
                     </div>
                     {/* Dot indicators */}
                     <div className="flex md:hidden justify-center gap-2 mt-6 pb-2">
@@ -130,7 +130,7 @@ export default function Features() {
                                         <p className="text-sm text-gray-500 mt-1">{feature.subtitle}</p>
                                     )}
                                     <span className="text-sm text-gray-900 font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300">
-                                        <span className="group-hover:underline underline-offset-4">자세히 보기</span>
+                                        <span className="group-hover:underline underline-offset-4">{moreText}</span>
                                         <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
                                     </span>
                                 </div>

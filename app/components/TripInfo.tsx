@@ -1,12 +1,12 @@
 import { cruiseData } from "@/data/cruise-data";
 
 export default function TripInfo() {
-    const { subtitle, flights, routeCities, reservationStatus, reservationCount, escortInfo, meetingPlace } = cruiseData.tripInfo;
+    const { title, subtitle, labels, flights, routeCities, reservationStatus, reservationCount, escortInfo, meetingPlace } = cruiseData.tripInfo;
     const { duration } = cruiseData.hero;
 
     const tripData = [
         {
-            label: "여행 일정",
+            label: labels.schedule,
             value: (
                 <div>
                     <div className="px-5 py-2 md:py-4 border-b border-gray-300">
@@ -17,15 +17,15 @@ export default function TripInfo() {
                         <div className="md:hidden">
                             {flights.outbound.map((leg, i) => (
                                 <div key={`out-${i}`}>
-                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국출발</span>{leg.departureDate} {leg.departureTime}</div>
-                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지도착</span>{leg.arrivalDate} {leg.arrivalTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">{labels.departKorea}</span>{leg.departureDate} {leg.departureTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">{labels.arriveLocal}</span>{leg.arrivalDate} {leg.arrivalTime}</div>
                                     <div className="text-gray-500 text-sm mt-0.5 mb-3">&rarr; {leg.duration}</div>
                                 </div>
                             ))}
                             {flights.inbound.map((leg, i) => (
                                 <div key={`in-${i}`}>
-                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">현지출발</span>{leg.departureDate} {leg.departureTime}</div>
-                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">한국도착</span>{leg.arrivalDate} {leg.arrivalTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">{labels.departLocal}</span>{leg.departureDate} {leg.departureTime}</div>
+                                    <div className="font-normal leading-relaxed text-gray-600"><span className="mr-2">{labels.arriveKorea}</span>{leg.arrivalDate} {leg.arrivalTime}</div>
                                     <div className="text-gray-500 text-sm mt-0.5 mb-1">&rarr; {leg.duration}</div>
                                 </div>
                             ))}
@@ -33,10 +33,10 @@ export default function TripInfo() {
                         {/* 데스크탑 */}
                         <div className="hidden md:block space-y-1 font-normal leading-relaxed text-gray-600">
                             {flights.outbound.map((leg, i) => (
-                                <div key={`out-${i}`}>한국 출발 &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;현지 도착 &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                                <div key={`out-${i}`}>{labels.departKorea} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveLocal} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
                             ))}
                             {flights.inbound.map((leg, i) => (
-                                <div key={`in-${i}`}>현지 출발 &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;한국 도착 &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                                <div key={`in-${i}`}>{labels.departLocal} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveKorea} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
                             ))}
                         </div>
                     </div>
@@ -44,7 +44,7 @@ export default function TripInfo() {
             )
         },
         {
-            label: "여행 지역",
+            label: labels.routeRegion,
             value: (
                 <div className="flex items-center flex-wrap gap-1">
                     {routeCities.map((city, i, arr) => (
@@ -57,16 +57,16 @@ export default function TripInfo() {
             ),
         },
         {
-            label: "예약 현황",
+            label: labels.reservationStatus,
             value: (
                 <div className="flex items-center gap-3">
                     <span className="inline-block bg-red-500 text-white text-xs md:text-base font-bold px-4 py-1 rounded-full">{reservationStatus}</span>
-                    <span className="text-gray-800 font-semibold text-base md:text-base">예약 <span className="text-red-500 text-xl md:text-base font-bold">{reservationCount}</span>명</span>
+                    <span className="text-gray-800 font-semibold text-base md:text-base">예약 <span className="text-red-500 text-xl md:text-base font-bold">{reservationCount}</span>{labels.reservationCountUnit}</span>
                 </div>
             ),
         },
-        { label: "인솔자", value: <span className="font-normal leading-relaxed text-gray-600">{escortInfo}</span> },
-        { label: "미팅 장소", value: <span className="font-normal leading-relaxed text-gray-600">{meetingPlace}</span> },
+        { label: labels.escort, value: <span className="font-normal leading-relaxed text-gray-600">{escortInfo}</span> },
+        { label: labels.meetingPlace, value: <span className="font-normal leading-relaxed text-gray-600">{meetingPlace}</span> },
     ];
 
     return (
@@ -76,7 +76,7 @@ export default function TripInfo() {
                 <div className="max-w-7xl mx-auto px-0 md:px-6">
                     <div className="text-center">
                         <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                            여행 주요 일정
+                            {title}
                         </h2>
                         <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
                             {subtitle || `${routeCities[0]}에서 ${routeCities[routeCities.length - 1]}까지 ${duration}의 항해`}

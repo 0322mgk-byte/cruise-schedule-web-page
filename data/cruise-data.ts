@@ -3,6 +3,7 @@ import type { CruisePackageData } from './types';
 export const cruiseData: CruisePackageData = {
   // ─── Hero ───
   hero: {
+    ctaText: "일정 확인하기",
     cruiseLine: "프린세스 크루즈 에메랄드호",
     departureDate: "2026년 08월 03일 출발",
     duration: "8박 10일",
@@ -33,7 +34,20 @@ export const cruiseData: CruisePackageData = {
 
   // ─── TripInfo ───
   tripInfo: {
+    title: "여행 주요 일정",
     subtitle: "밴쿠버에서 알래스카까지 8박 10일의 항해",
+    labels: {
+      schedule: "여행 일정",
+      departKorea: "한국 출발",
+      arriveLocal: "현지 도착",
+      departLocal: "현지 출발",
+      arriveKorea: "한국 도착",
+      routeRegion: "여행 지역",
+      reservationStatus: "예약 현황",
+      reservationCountUnit: "명",
+      escort: "인솔자",
+      meetingPlace: "미팅 장소",
+    },
     flights: {
       outbound: [
         {
@@ -67,6 +81,9 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Intro (Facilities) ───
   intro: {
+    title: "크루즈 시설 안내",
+    description: "크루즈에서 즐길 수 있는 대표 시설을 소개합니다",
+    moreText: "자세히 보기",
     facilities: [
       {
         name: "엔터테인먼트",
@@ -119,6 +136,9 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Features (Room Types) ───
   features: {
+    title: "숙박 시설 안내",
+    description: "바다 위의 호텔, 객실별 상세 시설 확인하기",
+    moreText: "자세히 보기",
     rooms: [
       {
         name: "인사이드",
@@ -185,6 +205,7 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Details (Ship Specs) ───
   details: {
+    title: "크루즈 제원",
     specs: [
       { label: "톤 수", value: "113,561톤" },
       { label: "길이", value: "289.86m" },
@@ -202,34 +223,29 @@ export const cruiseData: CruisePackageData = {
     },
   },
 
-  // ─── Tourist Spots ───
-  touristSpots: {
-    spots: [
-      {
-        name: "주노 (Juneau)",
-        description: "알래스카의 주도이자, 빙하를 가장 가까이에서 볼 수 있는 곳. 맨덴홀 빙하 트레킹과 고래 관찰 투어가 인기입니다.",
-        image: "https://images.unsplash.com/photo-1518182170546-07fb612d7c0f?q=80&w=2670&auto=format&fit=crop",
-      },
-      {
-        name: "스케그웨이 (Skagway)",
-        description: "골드러시 시대의 흔적이 그대로 남아있는 역사적인 마을. 화이트 패스 & 유콘 루트 철도 여행으로 대자연을 만끽하세요.",
-        image: "https://images.unsplash.com/photo-1548858226-c21146604245?q=80&w=2670&auto=format&fit=crop",
-      },
-      {
-        name: "엔디캇 암 (Endicott Arm)",
-        description: "피요르드의 절경을 감상하며 항해하는 코스. 거대한 빙벽과 유빙 사이를 지나는 신비로운 경험을 선사합니다.",
-        image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2670&auto=format&fit=crop",
-      },
-      {
-        name: "케치칸 (Ketchikan)",
-        description: "세계 연어의 수도. 원주민의 토템폴 문화와 크릭 스트리트의 수상 가옥들이 독특한 풍경을 자아냅니다.",
-        image: "https://images.unsplash.com/photo-1517066928509-58079cd3645e?q=80&w=2759&auto=format&fit=crop",
-      },
-    ],
-  },
 
   // ─── Schedule ───
   schedule: {
+    labels: {
+      title: "상세 일정",
+      expandAll: "모두 펼침",
+      collapseAll: "모두 접기",
+      dayLabel: "일차",
+      viewDetails: "상세보기",
+      tourGuidePrefix: "영어 가이드",
+      defaultTouristLocation: "[관광정보]",
+      defaultTourLabel: "[기항지 투어]",
+      defaultTourSublabel: "추천 선택 관광",
+      defaultSeaLabel: "🚢 전일 해상",
+      defaultSeaSublabel: "에메랄드 크루즈",
+      tourNoticeTitle: "💡 기항지 투어 예약 시 유의사항",
+      tourCode: "투어 코드",
+      expectedDuration: "예상 소요 시간",
+      expectedCost: "예상 비용",
+      highlight: "핵심 포인트",
+      note: "참고 사항",
+      mapTitleSuffix: "지도",
+    },
     dateRange: "2026년 8월 3일 — 8월 10일",
     durationLabel: "8박 10일",
     days: [
@@ -1197,6 +1213,18 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Pricing ───
   pricing: {
+    labels: {
+      title: "상품 가격",
+      roomSelect: "객실 선택",
+      adult: "성인",
+      adultAge: "(만 12세 이상)",
+      child: "소아",
+      childAge: "(만 12세 미만)",
+      infant: "유아",
+      infantAge: "(만 2세 미만)",
+      totalPrice: "총 결제 예정 금액",
+      surchargeNotice: "유류할증료&제세공과금 포함",
+    },
     roomTabs: [
       { key: "inside", label: "인사이드", prices: { adult: "5,790,000", child: "5,790,000", infant: "5,790,000" } },
       { key: "oceanview", label: "오션뷰", prices: { adult: "5,990,000", child: "5,990,000", infant: "5,990,000" } },
@@ -1251,6 +1279,12 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Product Info ───
   productInfo: {
+    labels: {
+      includedTitle: "포함사항",
+      excludedTitle: "불포함사항",
+    },
+    title: "상품 안내",
+    subtitle: "포함 내역과 별도 지출 항목을 확인해 보세요",
     includedItems: [
       "대한항공 왕복 항공료(이코노미), 공항-터미널 픽드랍",
       "에메랄드 프린세스 크루즈(인사이드, 오션뷰, 발코니)",
@@ -1268,6 +1302,12 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Trip Summary ───
   tripSummary: {
+    labels: {
+      title: "규정 및 유의사항",
+      subtitle: "예약 전 꼭 확인해야 할 필수 사항입니다",
+      cancellationTitle: "취소 위약금 규정",
+      noticeTitle: "중요 안내사항",
+    },
     cancellationItems: [
       "예약금 100만 원(환불 불가)",
       "출발일로부터 89일~60일 전 취소 시 신청금(150만 원) 위약금 부과",
@@ -1307,6 +1347,10 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Checklist ───
   checklist: {
+    labels: {
+      title: "준비물",
+      subtitle: "쾌적한 크루즈 여행을 위해 미리 챙겨주세요",
+    },
     categories: [
       {
         title: "서류 / 결제",
@@ -1427,8 +1471,24 @@ export const cruiseData: CruisePackageData = {
 
   // ─── Mobile Bottom Bar ───
   mobileBottomBar: {
+    kakaoTemplate: (adults, children, infants, totalPrice) => {
+      const parts = [];
+      if (adults > 0) parts.push(`성인 ${adults}명`);
+      if (children > 0) parts.push(`소아 ${children}명`);
+      if (infants > 0) parts.push(`유아 ${infants}명`);
+      return `${parts.join(", ")}, 총 예상 비용 ${totalPrice} 견적 문의합니다.`;
+    },
     phoneNumber: "02-000-0000",
     kakaoUrl: "https://open.kakao.com/",
     businessHours: "평일 09:00 - 18:00",
+    calculatorText: "요금 계산기",
+    inquiryText: "문의하기",
+    inquiryModalTitle: "문의하기",
+    copyButtonText: "복사하기",
+    copyCompleteText: "복사 완료!",
+    kakaoButtonText: "카톡 문의",
+    guideText: "일정표 잘 보셨나요? 더 궁금하신 점이나 인원별 상세 견적은 지금 보고 계신 카톡으로 편하게 말씀해 주세요!",
+    processTitle: "[예약 프로세스 요약]",
+    processFlow: "금액 확인 ➔ 카톡 문의 ➔ 맞춤 상담 ➔ 예약 확정"
   },
 };

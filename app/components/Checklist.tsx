@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { cruiseData } from "@/data/cruise-data";
 
-const { categories: checklistData } = cruiseData.checklist;
+const { labels, categories: checklistData } = cruiseData.checklist;
 
 function AccordionItem({ section, index, openSet, toggle, isLast }: {
     section: typeof checklistData[number];
@@ -174,10 +174,10 @@ export default function Checklist() {
             <div className="max-w-6xl mx-auto px-0 md:px-6">
                 <div className="text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                        준비물
+                        {labels.title}
                     </h2>
                     <p ref={mobileBtnAnchorRef} className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
-                        쾌적한 크루즈 여행을 위해 미리 챙겨주세요
+                        {labels.subtitle}
                     </p>
                 </div>
 
@@ -208,13 +208,13 @@ export default function Checklist() {
                         <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isAllOpen ? "rotate-180" : ""}`} />
                     </button>
                     <div className="flex items-start gap-x-10">
-                    {[leftItems, rightItems].map((columnItems, col) => (
-                        <div key={col} className="flex-1 bg-white border border-gray-200 border-t-0 shadow-[0_-1px_0_0_black]">
-                            {columnItems.map(({ section, index }, i) => (
-                                <AccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} isLast={i === columnItems.length - 1} />
-                            ))}
-                        </div>
-                    ))}
+                        {[leftItems, rightItems].map((columnItems, col) => (
+                            <div key={col} className="flex-1 bg-white border border-gray-200 border-t-0 shadow-[0_-1px_0_0_black]">
+                                {columnItems.map(({ section, index }, i) => (
+                                    <AccordionItem key={index} section={section} index={index} openSet={openSet} toggle={toggle} isLast={i === columnItems.length - 1} />
+                                ))}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

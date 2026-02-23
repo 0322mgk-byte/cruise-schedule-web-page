@@ -4,7 +4,7 @@ import Link from "next/link";
 import { cruiseData } from "@/data/cruise-data";
 
 export default function Hero() {
-    const { cruiseLine, departureDate, duration, description, mobileDescription, videoSources, mobileVideoSrc } = cruiseData.hero;
+    const { ctaText, cruiseLine, departureDate, duration, description, mobileDescription, videoSources, mobileVideoSrc } = cruiseData.hero;
 
     return (
         <div id="hero">
@@ -75,7 +75,7 @@ export default function Hero() {
                             href="#schedule"
                             className="inline-flex items-center justify-center h-14 px-8 text-base font-semibold rounded-full cursor-pointer whitespace-nowrap text-gray-900 hover:text-white transition-[background-position,color] duration-300 ease-out bg-[linear-gradient(to_top,#0054a0_50%,white_50%)] [background-size:100%_200%] [background-position:0%_0%] hover:[background-position:0%_100%]"
                         >
-                            일정 확인하기
+                            {ctaText}
                         </Link>
                     </div>
                 </div>

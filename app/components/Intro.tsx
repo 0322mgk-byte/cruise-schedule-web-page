@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cruiseData } from "@/data/cruise-data";
 
-const { facilities } = cruiseData.intro;
+const { title, description, moreText, facilities } = cruiseData.intro;
 
 export default function Intro() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -110,10 +110,10 @@ export default function Intro() {
             <section id="intro" className="py-12 md:py-20 bg-gray-100">
                 <div className="max-w-7xl mx-auto px-0 md:px-6 text-center">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                        크루즈 시설 안내
+                        {title}
                     </h2>
                     <p className="mt-2 md:mt-3 text-base md:text-lg font-normal leading-relaxed text-gray-600">
-                        크루즈에서 즐길 수 있는 대표 시설을 소개합니다
+                        {description}
                     </p>
 
                     <div className="mt-6 md:mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-8">
@@ -133,7 +133,7 @@ export default function Intro() {
                                     <span className="text-white text-lg font-semibold block">{facility.name}</span>
                                     <span className="text-white/80 text-sm font-medium block mt-1">{facility.subtitle}</span>
                                     <span className="text-white text-sm font-medium mt-3 inline-flex items-center gap-1 transition-all duration-300 animate-heartbeat">
-                                        <span className="group-hover:underline underline-offset-4">자세히 보기</span>
+                                        <span className="group-hover:underline underline-offset-4">{moreText}</span>
                                         <span className="transition-transform duration-300 group-hover:translate-x-2">&rsaquo;</span>
                                     </span>
                                 </div>
@@ -154,54 +154,54 @@ export default function Intro() {
                                 </button>
                             </div>
                             <div className="md:px-6 md:pt-6">
-                            <div
-                                className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-gray-200 overflow-hidden group/carousel touch-pan-y"
-                                onTouchStart={handleTouchStart}
-                                onTouchMove={handleTouchMove}
-                                onTouchEnd={handleTouchEnd}
-                            >
                                 <div
-                                    ref={carouselRef}
-                                    className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
-                                    style={{ transform: `translateX(calc(-${imageIndex * 100}% + ${dragOffset}px))` }}
-                                    onTransitionEnd={handleTransitionEnd}
+                                    className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-gray-200 overflow-hidden group/carousel touch-pan-y"
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
                                 >
-                                    {currentImages.map((src, i) => (
-                                        <img
-                                            key={i}
-                                            src={src}
-                                            alt={`${facilities[selectedIndex].name} ${i + 1}`}
-                                            className="w-full h-full object-cover flex-shrink-0"
-                                        />
-                                    ))}
-                                    {currentImages.length > 0 && (
-                                        <img
-                                            src={currentImages[0]}
-                                            alt={`${facilities[selectedIndex].name} 1`}
-                                            className="w-full h-full object-cover flex-shrink-0"
-                                        />
+                                    <div
+                                        ref={carouselRef}
+                                        className={`flex h-full ${isTransitioning ? "transition-transform duration-300 ease-in-out" : ""}`}
+                                        style={{ transform: `translateX(calc(-${imageIndex * 100}% + ${dragOffset}px))` }}
+                                        onTransitionEnd={handleTransitionEnd}
+                                    >
+                                        {currentImages.map((src, i) => (
+                                            <img
+                                                key={i}
+                                                src={src}
+                                                alt={`${facilities[selectedIndex].name} ${i + 1}`}
+                                                className="w-full h-full object-cover flex-shrink-0"
+                                            />
+                                        ))}
+                                        {currentImages.length > 0 && (
+                                            <img
+                                                src={currentImages[0]}
+                                                alt={`${facilities[selectedIndex].name} 1`}
+                                                className="w-full h-full object-cover flex-shrink-0"
+                                            />
+                                        )}
+                                    </div>
+                                    {currentImages.length > 1 && (
+                                        <>
+                                            <button
+                                                onClick={prevImage}
+                                                className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
+                                            >
+                                                <ChevronLeft className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={nextImage}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
+                                            >
+                                                <ChevronRight className="w-5 h-5" />
+                                            </button>
+                                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                                                {(imageIndex % totalImages) + 1}/{totalImages}
+                                            </div>
+                                        </>
                                     )}
                                 </div>
-                                {currentImages.length > 1 && (
-                                    <>
-                                        <button
-                                            onClick={prevImage}
-                                            className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
-                                        >
-                                            <ChevronLeft className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={nextImage}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-opacity"
-                                        >
-                                            <ChevronRight className="w-5 h-5" />
-                                        </button>
-                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
-                                            {(imageIndex % totalImages) + 1}/{totalImages}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
                             </div>
                             <div className="p-4 md:px-6 md:pb-6">
                                 <div className="mt-4 md:mt-6 text-sm md:text-base text-gray-700 leading-relaxed space-y-3 text-left">

@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 import { cruiseData } from "@/data/cruise-data";
 
 export default function Details() {
-    const { specs, youtube } = cruiseData.details;
+    const { title, specs, youtube } = cruiseData.details;
     const playerRef = useRef<YT.Player | null>(null);
 
     useEffect(() => {
@@ -76,14 +76,14 @@ export default function Details() {
                 <div className="max-w-7xl mx-auto px-0 md:px-6">
                     {/* 모바일 타이틀 */}
                     <h2 className="md:hidden text-2xl font-bold leading-tight tracking-normal text-gray-900 text-center">
-                        크루즈 제원
+                        {title}
                     </h2>
 
                     <div className="mt-6 md:mt-0 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 items-center">
                         <div className="order-2 md:order-none">
                             {/* 데스크탑 타이틀 */}
                             <h2 className="hidden md:block text-4xl font-bold leading-tight tracking-normal text-gray-900">
-                                크루즈 제원
+                                {title}
                             </h2>
                             <div className="px-4 md:px-0 md:mt-10 divide-y divide-gray-300 shadow-none md:shadow-[0_-1px_0_0_#111827,0_1px_0_0_#111827] md:border-b-0 text-base md:text-lg">
                                 {Array.from({ length: Math.ceil(specs.length / 2) }, (_, i) => (
