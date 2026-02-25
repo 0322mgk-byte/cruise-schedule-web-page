@@ -12,16 +12,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://emerald-princess-cruises-alaska.vercel.app"),
-  title: "호구 안 당하고 알래스카 VIP 가는 법",
+  metadataBase: new URL(siteUrl),
+  title: "호구 안 당하고 알래스카 크루즈 가는 법",
   description:
     "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
   openGraph: {
-    title: "호구 안 당하고 알래스카 VIP 가는 법",
+    title: "호구 안 당하고 알래스카 크루즈 가는 법",
     description:
       "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
-    url: "https://emerald-princess-cruises-alaska.vercel.app",
     siteName: "프린세스 크루즈 에메랄드호 알래스카",
     images: [
       {
@@ -36,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "호구 안 당하고 알래스카 VIP 가는 법",
+    title: "호구 안 당하고 알래스카 크루즈 가는 법",
     description:
       "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
     images: ["/Alaska-og.png"],
