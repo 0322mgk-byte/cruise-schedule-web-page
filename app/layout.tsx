@@ -20,11 +20,11 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "호구 안 당하고 알래스카 크루즈 가는 법",
+  title: "호구 안 당하고 알래스카 크루즈 VIP 가는 법",
   description:
     "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
   openGraph: {
-    title: "호구 안 당하고 알래스카 크루즈 가는 법",
+    title: "호구 안 당하고 알래스카 크루즈 VIP 가는 법",
     description:
       "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
     siteName: "프린세스 크루즈 에메랄드호 알래스카",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "호구 안 당하고 알래스카 크루즈 가는 법",
+    title: "호구 안 당하고 알래스카 크루즈 VIP 가는 법",
     description:
       "짐 싸는 고생, 바가지 끝! 30% 싸게 발코니에서 빙하 1열 직관",
     images: ["/Alaska-og.png"],
