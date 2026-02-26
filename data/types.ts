@@ -50,6 +50,7 @@ export interface InfoCardListItem {
   text: string;
   bold?: string;
   isWarning?: boolean;
+  subItems?: InfoCardListItem[];
 }
 
 export interface CruiseAtSeaItem {
@@ -272,6 +273,7 @@ export interface FeaturesData {
   title: string;
   description: string;
   moreText: string;
+  modalPrefix: string;
   rooms: RoomFeature[];
 }
 
@@ -342,6 +344,13 @@ export interface PricingLabels {
   infantAge: string;
   totalPrice: string;
   surchargeNotice: string;
+  infoModalTitle: string;
+  columnCategory: string;
+  columnCount: string;
+  columnUnitPrice: string;
+  columnTotalPrice: string;
+  personUnit: string;
+  reserveButton: string;
 }
 
 export interface PricingData {
@@ -379,12 +388,14 @@ export interface TripSummaryLabels {
   subtitle: string;
   cancellationTitle: string;
   noticeTitle: string;
+  safetyTitle: string;
 }
 
 export interface TripSummaryData {
   labels: TripSummaryLabels;
   cancellationItems: string[];
   importantNotices: NoticeItem[];
+  safetyNotices: InfoCardListItem[];
 }
 
 export interface ChecklistCategory {
@@ -413,18 +424,26 @@ export interface HeaderData {
   logoDarkPath?: string;
   mobileTitle?: string;
   navItems: NavItem[];
+  ctaText: string;
 }
 
 export interface FooterData {
   companyName: string;
-  description: string;
   logoPath?: string;
   copyright?: string;
-  phone: string;
+  specialty: string;
+  services: string;
+  cruiseLines: string[];
+  ceoLabel: string;
+  ceoName: string;
+  ceoNameEn: string;
+  addresses: string[];
+  mobileLabel: string;
+  mobiles: string[];
+  emailLabel: string;
   email: string;
-  hours: string;
-  address: string;
-  quickLinks: { label: string; href: string }[];
+  mainPhoneLabel: string;
+  mainPhone: string;
 }
 
 export interface MobileBottomBarData {

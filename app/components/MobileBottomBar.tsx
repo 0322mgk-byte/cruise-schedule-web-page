@@ -10,6 +10,7 @@ const {
     copyButtonText, copyCompleteText, kakaoButtonText,
     guideText, processTitle, processFlow, kakaoTemplate
 } = cruiseData.mobileBottomBar;
+const pricingLabels = cruiseData.pricing.labels;
 const ROOM_TABS = cruiseData.pricing.roomTabs.map((tab) => ({
     key: tab.key,
     label: tab.label,
@@ -184,7 +185,7 @@ export default function MobileBottomBar() {
                             {/* 성인 */}
                             <div className="flex items-center justify-between py-2">
                                 <div>
-                                    <div className="text-base text-gray-700">성인 <span className="text-sm">(만 12세 이상)</span></div>
+                                    <div className="text-base text-gray-700">{pricingLabels.adult} <span className="text-sm">{pricingLabels.adultAge}</span></div>
                                     <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(adults * adultPrice)}</div>
                                 </div>
                                 <div className="flex items-center">
@@ -209,7 +210,7 @@ export default function MobileBottomBar() {
                             {/* 아동 */}
                             <div className="flex items-center justify-between py-2">
                                 <div>
-                                    <div className="text-base text-gray-700">소아 <span className="text-sm">(만 12세 미만)</span></div>
+                                    <div className="text-base text-gray-700">{pricingLabels.child} <span className="text-sm">{pricingLabels.childAge}</span></div>
                                     <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(childPrice)}</div>
                                 </div>
                                 <div className="flex items-center">
@@ -234,7 +235,7 @@ export default function MobileBottomBar() {
                             {/* 유아 */}
                             <div className="flex items-center justify-between py-2">
                                 <div>
-                                    <div className="text-base text-gray-700">유아 <span className="text-sm">(만 2세 미만)</span></div>
+                                    <div className="text-base text-gray-700">{pricingLabels.infant} <span className="text-sm">{pricingLabels.infantAge}</span></div>
                                     <div className="text-base font-normal text-gray-900 mt-0.5">{formatPrice(infantPrice)}</div>
                                 </div>
                                 <div className="flex items-center">
@@ -261,10 +262,10 @@ export default function MobileBottomBar() {
 
                             {/* 총계 */}
                             <div className="flex items-start justify-between">
-                                <div className="text-base font-bold text-gray-900">총 결제 예정 금액</div>
+                                <div className="text-base font-bold text-gray-900">{pricingLabels.totalPrice}</div>
                                 <div className="text-right">
                                     <div className="text-xl font-bold text-gray-900">{formatPrice(totalPrice)}</div>
-                                    <div className="text-sm text-gray-500 mt-0.5">유류할증료&제세공과금 포함</div>
+                                    <div className="text-sm text-gray-500 mt-0.5">{pricingLabels.surchargeNotice}</div>
                                 </div>
                             </div>
                         </div>

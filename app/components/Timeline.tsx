@@ -12,6 +12,7 @@ import type {
   ShipInfoModal,
   CruiseAtSeaModal,
   InfoModal,
+  InfoCardListItem,
 } from "@/data/types";
 
 const { labels } = cruiseData.schedule;
@@ -47,6 +48,40 @@ const HotelIcon = () => (
     <rect x="15" y="12" width="3" height="3" rx="0.5" fill="white" />
     <rect x="9.5" y="17" width="5" height="4" rx="0.5" fill="white" />
   </svg>
+);
+
+// ─── InfoCardListItem Renderer ───
+
+const InfoCardListItems = ({ items }: { items: InfoCardListItem[] }) => (
+  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
+    {items.map((listItem, lIdx) => (
+      <li key={lIdx} className={listItem.isWarning ? "text-red-500" : ""}>
+        {listItem.isWarning && "\u26A0\uFE0F "}
+        {listItem.bold && (
+          <span className={`font-semibold ${listItem.isWarning ? "" : "text-gray-700"}`}>{listItem.bold} </span>
+        )}
+        {listItem.text}
+        {listItem.subItems && listItem.subItems.length > 0 && (
+          <div className="mt-3 mb-3 bg-red-50/60 border border-red-200 px-4 py-3 -ml-4 space-y-3">
+            {listItem.subItems.map((sub, sIdx) => (
+              <div key={sIdx}>
+                {sub.isWarning ? (
+                  <p className="text-red-600 font-semibold">
+                    {"\u26A0\uFE0F "}{sub.bold && `${sub.bold} `}{sub.text}
+                  </p>
+                ) : (
+                  <p>
+                    <span className="font-semibold text-gray-800">{sub.bold}</span>
+                    {" "}{sub.text}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
 );
 
 // ─── TimelineItemRenderer ───
@@ -255,17 +290,7 @@ const TimelineItemRenderer = ({
                 {item.sections.map((section, sIdx) => (
                   <div key={sIdx}>
                     <p className="font-semibold text-gray-800">{section.heading}</p>
-                    <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                      {section.items.map((listItem, lIdx) => (
-                        <li key={lIdx} className={listItem.isWarning ? "text-red-500" : ""}>
-                          {listItem.isWarning && "\u26A0\uFE0F "}
-                          {listItem.bold && (
-                            <span className={`font-semibold ${listItem.isWarning ? "" : "text-gray-700"}`}>{listItem.bold} </span>
-                          )}
-                          {listItem.text}
-                        </li>
-                      ))}
-                    </ul>
+                    <InfoCardListItems items={section.items} />
                   </div>
                 ))}
               </div>
@@ -731,19 +756,7 @@ const ModalRenderer = ({
               {m.sections.map((section, sIdx) => (
                 <div key={sIdx}>
                   <p className="font-semibold text-gray-800">{section.heading}</p>
-                  <ul className="mt-2 space-y-1.5 ml-4 list-disc">
-                    {section.items.map((listItem, lIdx) => (
-                      <li key={lIdx} className={listItem.isWarning ? "text-red-500" : ""}>
-                        {listItem.isWarning && "\u26A0\uFE0F "}
-                        {listItem.bold && (
-                          <span className={`font-semibold ${listItem.isWarning ? "" : "text-gray-700"}`}>
-                            {listItem.bold}{" "}
-                          </span>
-                        )}
-                        {listItem.text}
-                      </li>
-                    ))}
-                  </ul>
+                  <InfoCardListItems items={section.items} />
                 </div>
               ))}
             </div>

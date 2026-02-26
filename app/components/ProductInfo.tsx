@@ -34,7 +34,7 @@ export default function ProductInfo() {
                                 <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <circle cx="12" cy="12" r="9" />
                                 </svg>
-                                포함사항
+                                {labels.includedTitle}
                             </span>
                             <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${includedOpen ? "rotate-180" : ""}`} />
                         </button>
@@ -69,7 +69,7 @@ export default function ProductInfo() {
                                 <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                불포함사항
+                                {labels.excludedTitle}
                             </span>
                             <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${excludedOpen ? "rotate-180" : ""}`} />
                         </button>

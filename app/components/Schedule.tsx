@@ -1,6 +1,6 @@
 "use client";
 
-import { Timeline } from "@/components/ui/timeline";
+import { Timeline } from "./Timeline";
 
 export default function Schedule() {
     return (

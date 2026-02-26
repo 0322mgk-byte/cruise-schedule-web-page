@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/> <!-- Deep navy -->
+      <stop offset="50%" stop-color="#1E3A8A"/> <!-- Royal blue -->
+      <stop offset="100%" stop-color="#0284C7"/> <!-- Ocean blue -->
+    </linearGradient>
+    
+    <!-- Ship Body Gradient -->
+    <linearGradient id="ship-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+
+    <!-- Glacier Gradient -->
+    <linearGradient id="glacier-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BAE6FD" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#E0F2FE" stop-opacity="0.1"/>
+    </linearGradient>
+    
+    <!-- Wave Gradient -->
+    <linearGradient id="wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#0EA5E9" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="1"/>
+    </linearGradient>
+
+    <!-- App Icon Shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Clip path to keep it circular like the original -->
+  <clipPath id="circle-clip">
+    <circle cx="128" cy="128" r="128" />
+  </clipPath>
+
+  <g clip-path="url(#circle-clip)">
+    <!-- Base Background -->
+    <circle cx="128" cy="128" r="128" fill="url(#bg-grad)"/>
+
+    <!-- Background Glacier / Mountains -->
+    <path d="M20,160 L80,70 L130,120 L180,50 L250,150 L250,256 L0,256 Z" fill="url(#glacier-grad)" />
+    
+    <!-- Sun / Gold accent -->
+    <circle cx="190" cy="70" r="14" fill="#FDE047" filter="url(#shadow)"/>
+
+    <!-- Ship -->
+    <g filter="url(#shadow)" transform="translate(0, 10)">
+      <!-- Ship Hull -->
+      <path d="M60,150 C45,140 40,125 35,120 C60,120 190,120 230,120 C240,135 235,150 215,150 Z" fill="url(#ship-grad)"/>
+      
+      <!-- Ship Decks -->
+      <path d="M75,120 L80,100 L195,100 L200,120 Z" fill="#FFFFFF"/>
+      <path d="M90,100 L95,80 L175,80 L180,100 Z" fill="#F8FAFC"/>
+      <path d="M105,80 L110,65 L150,65 L155,80 Z" fill="#E2E8F0"/>
+      
+      <!-- Chimney -->
+      <path d="M115,65 L120,50 L135,50 L135,65 Z" fill="#0284C7"/>
+      
+      <!-- Windows / Details -->
+      <!-- Lower deck -->
+      <rect x="85" y="105" width="12" height="6" rx="3" fill="#1E3A8A"/>
+      <rect x="105" y="105" width="12" height="6" rx="3" fill="#1E3A8A"/>
+      <rect x="125" y="105" width="12" height="6" rx="3" fill="#1E3A8A"/>
+      <rect x="145" y="105" width="12" height="6" rx="3" fill="#1E3A8A"/>
+      <rect x="165" y="105" width="12" height="6" rx="3" fill="#1E3A8A"/>
+      <rect x="185" y="105" width="8" height="6" rx="3" fill="#1E3A8A"/>
+
+      <!-- Upper deck -->
+      <rect x="100" y="86" width="10" height="6" rx="2" fill="#1E3A8A"/>
+      <rect x="120" y="86" width="10" height="6" rx="2" fill="#1E3A8A"/>
+      <rect x="140" y="86" width="10" height="6" rx="2" fill="#1E3A8A"/>
+      <rect x="160" y="86" width="10" height="6" rx="2" fill="#1E3A8A"/>
+    </g>
+
+    <!-- Foreground Waves -->
+    <!-- Wave 1 (Back) -->
+    <path d="M-20,165 C60,140 130,200 270,150 L270,260 L-20,260 Z" fill="url(#wave-grad)"/>
+    
+    <!-- Wave 2 (Middle) -->
+    <path d="M-20,195 C80,220 170,160 270,185 L270,260 L-20,260 Z" fill="#7DD3FC" opacity="0.4"/>
+    
+    <!-- Wave 3 (Front) -->
+    <path d="M-20,215 C100,180 180,240 270,210 L270,260 L-20,260 Z" fill="#1E3A8A" opacity="0.6"/>
+  </g>
+</svg>

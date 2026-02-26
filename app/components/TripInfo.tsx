@@ -10,7 +10,7 @@ export default function TripInfo() {
             value: (
                 <div>
                     <div className="px-5 py-2 md:py-4 border-b border-gray-300">
-                        <span className="font-normal leading-relaxed text-gray-600">{flights.outbound[0].departureDate} {flights.outbound[0].departureTime} 출발 &nbsp;&nbsp;|&nbsp;&nbsp; {duration} <br className="md:hidden" /><span className="hidden md:inline">&nbsp;&nbsp;&nbsp;&nbsp;</span>✈️ {flights.outbound[0].airline}</span>
+                        <span className="font-normal leading-relaxed text-gray-600">{flights.outbound[0].departureDate} {flights.outbound[0].departureTime} 출발 &nbsp;&nbsp;|&nbsp;&nbsp; {duration} <br className="md:hidden" /><span className="hidden md:inline">&nbsp;&nbsp;&nbsp;&nbsp;</span>✈️ {flights.outbound[0].airline} {flights.outbound[0].flightCode}</span>
                     </div>
                     <div className="px-5 py-2 md:py-4 space-y-1">
                         {/* 모바일 */}
@@ -33,10 +33,10 @@ export default function TripInfo() {
                         {/* 데스크탑 */}
                         <div className="hidden md:block space-y-1 font-normal leading-relaxed text-gray-600">
                             {flights.outbound.map((leg, i) => (
-                                <div key={`out-${i}`}>{labels.departKorea} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveLocal} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                                <div key={`out-${i}`}>{labels.departKorea} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveLocal} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.duration}</div>
                             ))}
                             {flights.inbound.map((leg, i) => (
-                                <div key={`in-${i}`}>{labels.departLocal} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveKorea} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.flightCode} &nbsp;&nbsp;{leg.duration}</div>
+                                <div key={`in-${i}`}>{labels.departLocal} &nbsp;{leg.departureDate} {leg.departureTime} &nbsp;&nbsp;&rarr; &nbsp;&nbsp;{labels.arriveKorea} &nbsp;{leg.arrivalDate} {leg.arrivalTime} &nbsp;&nbsp;&nbsp;{leg.duration}</div>
                             ))}
                         </div>
                     </div>

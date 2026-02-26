@@ -18,7 +18,13 @@
       "Bash(head:*)",
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(curl:*)",
-      "Bash(cd C:/AI_Project/cruise-schedule-web-page && npx tsc --noEmit 2>&1)"
+      "Bash(cd C:/AI_Project/cruise-schedule-web-page && npx tsc --noEmit 2>&1)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(magick:*)",
+      "Bash(pip install:*)",
+      "Bash(where python:*)",
+      "Bash(node:*)"
     ]
   }
 }

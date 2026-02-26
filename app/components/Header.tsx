@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Phone } from "lucide-react";
 import { cruiseData } from "@/data/cruise-data";
 
-const { navItems, companyName, logoPath, logoDarkPath, mobileTitle } = cruiseData.header;
+const { navItems, companyName, logoPath, logoDarkPath, ctaText } = cruiseData.header;
+const { mainPhone } = cruiseData.footer;
+const { kakaoUrl } = cruiseData.mobileBottomBar;
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,16 +22,40 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 w-full h-12 md:h-20 z-50 transition-all duration-300 bg-[#0054a0] ${scrolled
+      className={`fixed top-0 w-full h-12 md:h-20 z-50 transition-all duration-300 bg-white border-b border-gray-200 ${scrolled
         ? "md:bg-white/80 md:backdrop-blur-md md:border-b md:border-gray-200 md:shadow-sm"
         : "md:bg-transparent md:border-b md:border-white/30"
         }`}
     >
       <div className="relative h-full max-w-7xl mx-auto px-4 md:px-10 flex items-center">
-        {/* 모바일: 상품상세정보 중앙 표시 */}
-        <span className="md:hidden flex-1 text-center font-bold text-base text-white">
-          {mobileTitle || "상품상세정보"}
-        </span>
+        {/* 모바일: 좌측 로고 + 회사명 */}
+        <div className="md:hidden flex flex-1 items-center">
+          <Link href="/" className="flex items-center gap-2">
+            {logoDarkPath && (
+              <img src={logoDarkPath} alt={`${companyName} 로고`} className="h-6 w-auto" />
+            )}
+            <span className="font-bold text-base text-gray-900">{companyName}</span>
+          </Link>
+        </div>
+
+        {/* 모바일: 우측 카톡 + 대표전화 버튼 */}
+        <div className="md:hidden flex items-center gap-2">
+          <a
+            href={kakaoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-7 h-7 flex items-center justify-center rounded-full overflow-hidden"
+          >
+            <img src="/header/kakaotalk.svg" alt="카카오톡 문의" className="w-full h-full" />
+          </a>
+          <a
+            href={`tel:${mainPhone}`}
+            className="h-7 px-3 inline-flex items-center gap-1 rounded-full bg-[#0054a0] text-white text-xs font-medium"
+          >
+            <Phone className="w-3 h-3" fill="currentColor" />
+            {mainPhone}
+          </a>
+        </div>
 
         {/* 데스크톱: 로고 + 한세계여행사 좌측 */}
         <div className="hidden md:flex flex-1 items-center">
@@ -68,7 +95,7 @@ export default function Header() {
               : "bg-white text-gray-900 hover:bg-gray-100"
               }`}
           >
-            예약 문의
+            {ctaText}
           </Link>
         </div>
       </div>

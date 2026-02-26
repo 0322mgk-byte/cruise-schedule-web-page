@@ -117,23 +117,34 @@ export const headerData: HeaderData = {
     { name: "규정 안내", href: "#trip-summary" },
     { name: "준비물", href: "#checklist" },
   ],
+  ctaText: "예약 문의",
 };
 
 export const footerData: FooterData = {
   companyName: "한세계여행사",
-  description: "꿈꾸던 크루즈 여행, 에메랄드 프린세스와 함께하세요. 최고의 서비스와 잊지 못할 추억을 약속드립니다.",
   logoPath: "/header/KakaoTalk_20260220_105453762_02 12.png",
-  copyright: "© 2026 Emerald Princess Cruise. All rights reserved.",
-  phone: "1588-0000",
-  email: "contact@cruise.com",
-  hours: "평일 09:00 - 18:00",
-  address: "서울특별시 중구 세종대로 123",
-  quickLinks: [
-    { label: "크루즈 소개", href: "#intro" },
-    { label: "시설 안내", href: "#facilities" },
-    { label: "운항 일정", href: "#schedule" },
-    { label: "기항지 관광", href: "#tourist-spots" },
+  copyright: "© 2026 한세계여행사. All rights reserved.",
+  specialty: "전세계 크루즈 전문",
+  services: "성지순례 · 해외여행",
+  cruiseLines: [
+    "INCRUISES · VIRGIN VOYAGES",
+    "ROYAL CARIBBEAN · MSC",
+    "CARNIVAL · COSTA",
+    "NORWEGIAN · PRINCESS",
   ],
+  ceoLabel: "대표",
+  ceoName: "임 두 환",
+  ceoNameEn: "CEO LIM DOO HWAN",
+  addresses: [
+    "전북 군산시 미제3길 2 홍익빌딩 2층",
+    "군산시 중정1길 7-4",
+  ],
+  mobileLabel: "Mobile.",
+  mobiles: ["010-6811-9191", "010-8468-9185"],
+  emailLabel: "E-mail.",
+  email: "imdh91@naver.com",
+  mainPhoneLabel: "대표전화",
+  mainPhone: "1688-3221",
 };
 
 export const mobileBottomBarData: MobileBottomBarData = {

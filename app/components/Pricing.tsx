@@ -55,13 +55,13 @@ export default function Pricing() {
             <section className="md:hidden py-12 bg-white">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900 text-center leading-tight tracking-normal px-5">
-                        상품 가격
+                        {labels.title}
                     </h2>
 
                     <div className="mt-6">
                         {/* 칩 셀렉터 (시안 9 스타일) */}
                         <div className="flex items-center gap-2 px-4">
-                            <span className="text-sm font-semibold text-gray-700 mr-1">객실 선택</span>
+                            <span className="text-sm font-semibold text-gray-700 mr-1">{labels.roomSelect}</span>
                             {ROOM_TABS.map((tab) => (
                                 <button
                                     key={tab.key}
@@ -123,7 +123,7 @@ export default function Pricing() {
                         onClick={openModal}
                         className="mt-4 mx-4 w-[calc(100%-2rem)] flex items-center justify-center gap-1.5 py-3 border border-gray-300 text-base font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                     >
-                        독실료 및 추가요금 안내
+                        {labels.infoModalTitle}
                         <ExternalLink className="w-4 h-4" />
                     </button>
                 </div>
@@ -133,7 +133,7 @@ export default function Pricing() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center">
                         <div className="relative z-10 bg-white w-full h-full overflow-y-auto">
                             <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 py-3">
-                                <h3 className="text-base font-bold">독실료 및 추가요금 안내</h3>
+                                <h3 className="text-base font-bold">{labels.infoModalTitle}</h3>
                                 <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
                                     <X className="w-5 h-5" />
                                 </button>
@@ -160,16 +160,16 @@ export default function Pricing() {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center">
                         <h2 className="text-4xl font-bold text-gray-900 leading-tight tracking-normal">
-                            상품 가격
+                            {labels.title}
                         </h2>
                     </div>
 
                     {(() => {
                         const unitPrice = parsePrice(currentRoom.prices.adult);
                         const rows = [
-                            { key: "adult" as const, label: "성인", sub: "만 12세 이상", price: unitPrice },
-                            { key: "child" as const, label: "아동", sub: "만 12세 미만", price: unitPrice },
-                            { key: "infant" as const, label: "유아", sub: "만 2세 미만", price: unitPrice },
+                            { key: "adult" as const, label: labels.adult, sub: labels.adultAge, price: unitPrice },
+                            { key: "child" as const, label: labels.child, sub: labels.childAge, price: unitPrice },
+                            { key: "infant" as const, label: labels.infant, sub: labels.infantAge, price: unitPrice },
                         ];
                         const grandTotal = rows.reduce((sum, r) => sum + r.price * counts[r.key], 0);
 
@@ -201,10 +201,10 @@ export default function Pricing() {
                                             <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="border-b border-gray-300">
-                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-32">구분</th>
-                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-18">인원</th>
-                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-28">기본 상품가</th>
-                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 w-28">총 상품가</th>
+                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-32">{labels.columnCategory}</th>
+                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-18">{labels.columnCount}</th>
+                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 border-r border-gray-300 w-28">{labels.columnUnitPrice}</th>
+                                                        <th className="bg-gray-50 px-3 py-2.5 text-center font-semibold text-gray-700 w-28">{labels.columnTotalPrice}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -221,7 +221,7 @@ export default function Pricing() {
                                                                     className="border border-gray-300 px-2 py-1 text-sm bg-white text-gray-700 cursor-pointer"
                                                                 >
                                                                     {PERSON_OPTIONS.map((n) => (
-                                                                        <option key={n} value={n}>{n}명</option>
+                                                                        <option key={n} value={n}>{n}{labels.personUnit}</option>
                                                                     ))}
                                                                 </select>
                                                             </td>
@@ -244,10 +244,10 @@ export default function Pricing() {
                                     <div className="w-[26rem] shrink-0 border-l border-gray-300 flex flex-col">
                                         <div className="flex-1 flex flex-col items-end justify-center px-12 py-6">
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-lg text-gray-700">{labels.totalPrice}</span>
-                                                <span className="text-4xl font-bold text-[#0054a0]">
+                                                <span className="text-base text-gray-700">{labels.totalPrice}</span>
+                                                <span className="text-3xl font-bold text-[#0054a0]">
                                                     {formatPrice(grandTotal)}
-                                                    <span className="text-xl ml-0.5 text-gray-700 font-normal">원</span>
+                                                    <span className="text-lg ml-0.5 text-gray-700 font-normal">원</span>
                                                 </span>
                                             </div>
                                             {notices.map((notice, idx) => (
@@ -256,7 +256,7 @@ export default function Pricing() {
                                                 </p>
                                             ))}
                                             <button className="mt-6 w-full py-3.5 bg-[#0054a0] text-white font-medium text-lg transition-colors hover:bg-[#004080]">
-                                                상품 예약 하기
+                                                {labels.reserveButton}
                                             </button>
                                         </div>
                                     </div>

@@ -8,7 +8,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Maximize2, BedDouble, Refrigerator, Tv, Bath, Waves, ConciergeBell, DoorClosed, Armchair, Wind, Lock, AppWindow,
 };
 
-const { title, description, moreText, rooms: features } = cruiseData.features;
+const { title, description, moreText, modalPrefix, rooms: features } = cruiseData.features;
 
 export default function Features() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -145,7 +145,7 @@ export default function Features() {
                         <div className="absolute inset-0 bg-black/50 hidden md:block" onClick={closeModal} />
                         <div className="relative z-10 bg-white w-full h-full md:h-auto md:max-w-3xl md:max-h-[90vh] overflow-y-auto shadow-2xl">
                             <div className="sticky top-0 z-20 bg-[#0054a0] text-white flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-                                <h3 className="text-base md:text-lg font-bold">[객실 안내] {features[selectedIndex].name}</h3>
+                                <h3 className="text-base md:text-lg font-bold">[{modalPrefix}] {features[selectedIndex].name}</h3>
                                 <button onClick={closeModal} className="hover:bg-[#004080] p-1 transition-colors">
                                     <X className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>
